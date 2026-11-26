@@ -1,0 +1,28 @@
+/* V32 — Stable playfield: no layout reflow as HUD values or zone names change. */
+.play{overflow-anchor:none}
+.play .hud{display:grid!important;grid-template-columns:minmax(0,1fr) max-content;grid-template-rows:40px auto;align-items:center;gap:4px 8px;min-width:0}
+.play .hud>div:first-child{grid-column:1;grid-row:1;min-width:0!important;overflow:hidden}
+.play .hud #sector,.play .hud .playerlabel{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:17px}
+.play .hud .gameActions{grid-column:2;grid-row:1;display:flex;flex-wrap:nowrap;gap:4px;min-width:0}
+.play .hud .stats{grid-column:1/-1;grid-row:2;display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:22px 18px;gap:2px 6px;min-width:0!important;align-items:center;overflow:hidden}
+.play .hud .stats>span{display:block;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;line-height:20px}
+.play .hud .stats #bossHud{grid-column:1/-1;grid-row:2;line-height:18px;text-align:center;font-size:12px}
+.play .hud .stats #bossHud[hidden]{display:block!important;visibility:hidden}
+.play .hud .gameActions button{white-space:nowrap}
+.play .screen{overflow-anchor:none}
+.play.gamefull .hud{grid-template-rows:40px auto!important;flex:0 0 auto!important}
+.play.gamefull .screen{flex:1 1 0!important;min-height:0!important}
+.play.gamefull .instructions{flex:0 0 auto;min-height:0}
+@media(max-width:600px) and (orientation:portrait){
+ .play .hud .stats{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:22px 22px 18px}
+ .play .hud .stats #bossHud{grid-row:3}
+ .play .hud .gameActions button{font-size:11px;padding:4px 6px;min-height:38px}
+}
+@media(max-height:500px) and (orientation:landscape){
+ .play.gamefull .hud{grid-template-columns:minmax(0,1fr) max-content!important;grid-template-rows:34px auto!important}
+ .play.gamefull .hud .playerlabel{display:none}
+ .play.gamefull .hud .stats{grid-template-rows:18px 16px}
+ .play.gamefull .hud .stats>span{line-height:18px;font-size:11px}
+ .play.gamefull .hud .stats #bossHud{line-height:16px;font-size:11px}
+ .play.gamefull .gameActions button{min-height:32px}
+}
