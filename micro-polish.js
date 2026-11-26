@@ -210,6 +210,44 @@ function platform(c,{chapter,world,a,b,y=334,main=false,cam=0,time=0,moving=fals
  if(natural)for(let i=start;i<=end;i++){const x=a+i*32+8;if(x<a+4||x>b-4)continue;const q=hash(world*91+i);p.path([['M',x-4,y+1],['L',x-1,y-2-q*3],['L',x+2,y+1]],base);if(!lite&&q>.78)p.oval(x,y-3,1.6,1.6,trim)}
  if(moving){p.oval((a+b)/2,y+depth+8,Math.min(w*.35,36),5,null,base,1.3);p.gem((a+b)/2,y+depth+8,4,trim)}
 }
+function gate(c,{chapter,world,x,index,open,time=0}){
+ const p=pen(c),[type,base,dark,trim]=theme(chapter,world),lite=!!root.MicroPlayPrefs?.lite,industrial=['factory','workshop','orbit'].includes(type),natural=['forest','garden','oasis'].includes(type),egypt=chapter==='pyramides',center=x+15;
+ c.save();c.translate(center,0);
+ const stone=p.grad(-48,140,48,334,base,dark),face=p.grad(-28,180,28,330,trim,base),accent=open?'#aaf4ce':'#f3d9a0';
+ p.oval(0,333,48,5,'#12252e66');
+ p.poly([[-46,334],[-40,324],[-32,324],[-32,178],[32,178],[32,324],[40,324],[46,334]],stone,dark,1.3);
+ p.poly([[-42,178],[-42,164],[0,egypt?142:126],[42,164],[42,178]],stone,dark,1.2);
+ p.poly([[-34,165],[0,egypt?149:137],[34,165],[0,158]],face);
+ for(const s of [-1,1]){
+  const X=s*26;p.box(X-7,183,14,140,face,dark);p.line(X-5,186,X-5,322,trim+'99',1);
+  for(let i=0;i<5;i++){const y=192+i*26;if(industrial){p.oval(X,y,3.8,3.8,dark,trim,.8);p.line(X-2,y,X+2,y,base,1)}else if(natural){p.path([['M',X-3,y+11],['Q',X+8,y+3,X-1,y-7]],null,dark,1.6);if(!lite)p.oval(X+2,y-2,3.5,2,base)}else{p.line(X-6,y,X+6,y,dark,1.2);p.gem(X,y+8,2.4,trim)}}
+ }
+ p.path([['M',-19,326],['L',-19,204],['Q',0,180,19,204],['L',19,326],['Z']],dark,trim,1);
+ if(open){p.glow(0,254,45,'#9bf0c4');p.path([['M',-15,325],['L',-15,207],['Q',0,188,15,207],['L',15,325],['Z']],p.grad(-15,200,15,325,'#245d6455','#7be4bf90'));
+  for(let i=0;i<(lite?3:7);i++){const y=207+(time*.036+i*20)%113;p.oval(-9+i%3*9,y,1.5,3,'#e1fff0')}
+ }else{
+  p.path([['M',-15,325],['L',-15,207],['Q',0,188,15,207],['L',15,325],['Z']],p.grad(-15,200,15,325,base,dark),trim,.9);
+  p.line(0,201,0,323,dark,1.8);
+  for(let i=0;i<4;i++){const y=222+i*27;p.line(-14,y,14,y,dark,2);p.line(-13,y+1,13,y+1,trim+'80',.8)}
+  p.glow(0,255,24,accent);p.gem(0,255,9,accent);
+ }
+ p.box(-44,325,88,9,stone,dark);p.line(-42,326,42,326,trim,1);
+ p.gem(0,164,9,accent);
+ p.box(-40,108,80,22,'#1c3447',base);p.text(0,123,(egypt?'PORTE ':chapter==='litteral'?'PORTAIL ':'PORTE ')+(index+1),'#f4eedc',12);
+ c.restore();
+}
+function sanctuary(c,{chapter,world,open,time=0,x=4160}){
+ const p=pen(c),[type,base,dark,trim]=theme(chapter,world),lite=!!root.MicroPlayPrefs?.lite;
+ c.save();c.translate(x,0);
+ const stone=p.grad(-92,172,90,334,base,dark),accent=open?'#baf4d1':trim;
+ p.poly([[-87,334],[-87,215],[0,153],[87,215],[87,334]],stone,dark,1.5);
+ p.poly([[-96,215],[0,145],[96,215],[83,224],[0,165],[-83,224]],p.grad(-85,180,85,224,trim,base),dark,1.4);
+ for(const s of [-1,1]){p.box(s*65-12,224,24,110,stone,dark);p.box(s*65-16,218,32,8,base,dark);p.box(s*65-16,326,32,8,base,dark);p.line(s*65-8,231,s*65-8,324,trim+'90',1.2);if(!lite)for(let i=0;i<4;i++)p.gem(s*65,240+i*21,3,trim)}
+ p.path([['M',-44,334],['L',-44,243],['Q',0,185,44,243],['L',44,334],['Z']],dark,trim,1.2);
+ p.glow(0,259,open?68:32,accent);p.gem(0,252+Math.sin(time/320)*4,25,accent);
+ if(open){for(let i=0;i<(lite?4:9);i++){const a=i*Math.PI*2/9+time/1300;p.gem(Math.cos(a)*39,252+Math.sin(a)*31,2.8,accent)}}
+ p.box(-52,171,104,20,'#1c3447',base);p.text(0,185,'SANCTUAIRE','#f4eedc',12);c.restore();
+}
 function victory(c,{chapter,world,character,colors,accessory,armor,magic,time=0,name=''}){const p=pen(c),[type,base,dark,trim]=theme(chapter,world);p.box(0,0,960,300,p.grad(0,0,960,300,dark,'#233c54'));p.glow(480,160,185,base);for(let i=0;i<45;i++){const x=hash(i+3)*960,y=hash(i+88)*300;p.gem(x,y,2+hash(i+16)*3,i%2?base:trim)}p.oval(480,260,290,15,'#152c40aa');enemy(c,{chapter,world,x:610,y:260,boss:true,friendly:true,scale:2.1,time});root.MicroHeroes?.draw(c,{character,...colors,accessory,armor,magic,x:335,y:260,scale:2.25,time,pose:'victory'});p.text(480,31,'GARDIEN LIBÉRÉ',trim,23);p.text(480,55,name,'#f6eddc',16)}
-root.MicroPolish={enemy,burst,projectile,scenery,platform,victory,themes};
+root.MicroPolish={enemy,burst,projectile,scenery,platform,gate,sanctuary,victory,themes};
 })(globalThis);
