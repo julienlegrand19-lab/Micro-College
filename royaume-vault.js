@@ -1,6 +1,6 @@
 /* Local encrypted profiles. No passwords or progress are sent to a server. */
 (function(root){
- const PREFIX='royaume-vault-v1:',LEGACY={relatifs:'royaume-profils-v8',pyramides:'royaume-pyramides-profils-v1'};
+ const PREFIX='royaume-vault-v1:',LEGACY={relatifs:'royaume-profils-v8',pyramides:'royaume-pyramides-profils-v1',litteral:'royaume-litteral-profils-v1'};
  const norm=name=>'p:'+String(name).trim().normalize('NFC').toLocaleLowerCase('fr');
  function createVault(store,crypt,encode,decode,b64,unb64){
   const enc=new encode(),dec=new decode(),sub=crypt.subtle;
