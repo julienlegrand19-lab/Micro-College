@@ -12,7 +12,7 @@ CREATE INDEX IF NOT EXISTS sessions_student ON sessions(student_id);
 CREATE INDEX IF NOT EXISTS sessions_expiry ON sessions(expires_at);
 CREATE TABLE IF NOT EXISTS progress (
  student_id TEXT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
- chapter TEXT NOT NULL CHECK(chapter IN ('relatifs','pyramides')),
+ chapter TEXT NOT NULL CHECK(chapter IN ('relatifs','pyramides','litteral')),
  data TEXT NOT NULL, updated_at INTEGER NOT NULL,
  PRIMARY KEY(student_id,chapter)
 );
