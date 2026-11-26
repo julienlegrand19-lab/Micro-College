@@ -75,6 +75,24 @@ function enemy(c,o){
  c.save();c.translate(o.x,o.y);const breathe=1+Math.sin(o.time/340)*.012;c.scale(1,breathe);
  p.glow(0,-65,86,o.friendly?'#b9f4b7':base);
  if(!o.friendly){for(let i=0;i<10;i++){const a=i*Math.PI/5+o.time/2200;p.gem(Math.cos(a)*68,-65+Math.sin(a)*66,4,trim)}}
+ const z=o.friendly?.65:1,phase=o.time/600,crest=o.friendly?'#bcebd0':trim;
+ c.save();c.globalAlpha=.88*z;
+ if(type==='forest'){for(const s of [-1,1]){p.path([['M',s*32,-99],['Q',s*48,-136,s*66,-143],['Q',s*56,-128,s*53,-116]],null,crest,3.8);for(let i=0;i<3;i++)p.gem(s*(44+i*9),-111-i*13,4,base)}}
+ else if(type==='mine'){for(const s of [-1,1])for(let i=0;i<3;i++){const x=s*(39+i*13),y=-59-i*13;p.poly([[x-9,y+8],[x-8,y-11],[x,y-24],[x+10,y-4],[x+8,y+12]],p.grad(x-10,y-24,x+10,y+12,crest,dark),dark,1.2)}}
+ else if(type==='factory'||type==='workshop'){for(const s of [-1,1]){const x=s*56,y=-87;p.oval(x,y,23,23,dark,base,2);for(let j=0;j<10;j++){const a=j*Math.PI/5+phase*s;p.line(x+Math.cos(a)*17,y+Math.sin(a)*17,x+Math.cos(a)*27,y+Math.sin(a)*27,base,5)}p.oval(x,y,10,10,base,dark);p.oval(x,y,5,5,crest)}}
+ else if(type==='orbit'){p.oval(0,-81,83,29,null,crest+'9a',2);for(let i=0;i<4;i++){const a=phase+i*Math.PI/2;p.gem(Math.cos(a)*82,-81+Math.sin(a)*29,7,base)}}
+ else if(type==='fortress'){for(const s of [-1,1]){const flap=Math.sin(phase*2)*8;p.path([['M',s*20,-63],['Q',s*49,-122,s*83,-107+flap],['L',s*73,-47],['L',s*56,-60],['L',s*42,-27],['Z']],p.grad(0,-110,s*83,-30,base,dark),crest,1.4);p.line(s*24,-62,s*73,-100+flap,crest+'80',1.8)}}
+ else if(type==='eclipse'){p.oval(0,-103,48,48,null,crest,2);p.oval(0,-103,54,54,null,base+'77',1.2);p.oval(0,-103,31,31,dark);p.oval(11,-113,30,30,base+'40')}
+ else if(type==='oasis'){for(const s of [-1,1]){p.poly([[s*19,-112],[s*48,-105],[s*67,-52],[s*37,-57]],p.grad(s*19,-112,s*67,-52,crest,base),dark);for(let i=0;i<4;i++)p.line(s*(24+i*7),-105+i*3,s*(39+i*6),-58,dark,2.4)}}
+ else if(type==='obelisk'){for(const s of [-1,1])p.poly([[s*52-9,-28],[s*52-6,-109],[s*52,-126],[s*52+6,-109],[s*52+9,-28]],p.grad(s*52-9,-126,s*52+9,-28,base,dark),crest)}
+ else if(type==='papyrus'){for(const s of [-1,1]){p.path([['M',s*9,-45],['Q',s*45,-112,s*77,-77],['Q',s*61,-49,s*20,-32],['Z']],p.grad(0,-105,s*77,-30,crest,base),dark,1.2);for(let i=1;i<4;i++)p.line(s*16,-45,s*(28+i*12),-84+i*3,dark,1.2)}}
+ else if(type==='tomb'){for(const s of [-1,1]){p.poly([[s*36,-39],[s*58,-42],[s*60,-92],[s*45,-110],[s*30,-84]],base,dark);p.gem(s*48,-81,9,crest)}}
+ else if(type==='temple'){p.oval(0,-120,36,17,null,crest,2.5);for(let i=0;i<5;i++)p.gem(-32+i*16,-120-Math.sin(i*Math.PI/4)*9,5,base)}
+ else if(type==='garden'){for(const s of [-1,1]){p.path([['M',s*31,-55],['Q',s*56,-92,s*70,-70],['Q',s*65,-39,s*31,-55],['Z']],p.grad(s*31,-90,s*70,-40,crest,base),dark);p.line(s*32,-55,s*63,-69,dark,1.4)}}
+ else if(type==='mirror'){for(let i=0;i<5;i++){const a=phase*.6+i*1.257;p.gem(Math.cos(a)*70,-83+Math.sin(a)*56,11,base)}}
+ else if(type==='library'){for(const s of [-1,1]){p.line(s*29,-130,s*66,-130,crest,3);p.line(s*61,-130,s*50,-96,crest,1.8);p.line(s*61,-130,s*72,-96,crest,1.8);p.oval(s*61,-96,15,4,base,dark,1.3)}}
+ else{p.oval(0,-88,70,80,null,crest+'99',2.2);for(let i=0;i<6;i++){const a=i*Math.PI/3+phase*.6;p.gem(Math.cos(a)*70,-88+Math.sin(a)*80,7,base)}}
+ c.restore();
  old?.draw(c,{...o,x:0,y:0,scale:o.scale||1.85});
  p.oval(0,2,48,8,null,o.friendly?'#a4e7b6':base,1.8);
  if(o.attack&&!o.friendly){const v=.5+.5*Math.sin(o.time/55);p.glow(-30,-32,23+v*12,'#ffc091');p.oval(-30,-32,15+v*8,15+v*8,null,'#ffdea4',2)}
