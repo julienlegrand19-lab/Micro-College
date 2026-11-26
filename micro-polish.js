@@ -74,7 +74,7 @@ function enemy(c,o){
  // Keep the 16 authored boss models, with dramatic silhouettes, breathing and a distinct crest.
  c.save();c.translate(o.x,o.y);const breathe=1+Math.sin(o.time/340)*.012;c.scale(1,breathe);
  p.glow(0,-65,86,o.friendly?'#b9f4b7':base);
- if(!o.friendly){for(let i=0;i<10;i++){const a=i*Math.PI/5+o.time/2200;p.gem(Math.cos(a)*68,-65+Math.sin(a)*66,4,trim)}}
+ if(!o.friendly){for(let i=0;i<(root.MicroPlayPrefs?.lite?4:10);i++){const a=i*Math.PI/5+o.time/2200;p.gem(Math.cos(a)*68,-65+Math.sin(a)*66,4,trim)}}
  const z=o.friendly?.65:1,phase=o.time/600,crest=o.friendly?'#bcebd0':trim;
  c.save();c.globalAlpha=.88*z;
  if(type==='forest'){for(const s of [-1,1]){p.path([['M',s*32,-99],['Q',s*48,-136,s*66,-143],['Q',s*56,-128,s*53,-116]],null,crest,3.8);for(let i=0;i<3;i++)p.gem(s*(44+i*9),-111-i*13,4,base)}}
@@ -98,7 +98,7 @@ function enemy(c,o){
  if(o.attack&&!o.friendly){const v=.5+.5*Math.sin(o.time/55);p.glow(-30,-32,23+v*12,'#ffc091');p.oval(-30,-32,15+v*8,15+v*8,null,'#ffdea4',2)}
  c.restore()
 }
-function projectile(c,shot,t,col,hostile=false){const p=pen(c),id=shot.spell||shot.element||'light',x=shot.x,y=shot.y,d=shot.dir||1;c.save();p.glow(x,y,hostile?21:24,col);for(let i=1;i<6;i++)p.oval(x-d*i*6,y+Math.sin(i+t/65)*2,Math.max(1,5-i*.7),2.5,col+'99');
+function projectile(c,shot,t,col,hostile=false){const p=pen(c),id=shot.spell||shot.element||'light',x=shot.x,y=shot.y,d=shot.dir||1;c.save();p.glow(x,y,hostile?21:24,col);for(let i=1;i<(root.MicroPlayPrefs?.lite?3:6);i++)p.oval(x-d*i*6,y+Math.sin(i+t/65)*2,Math.max(1,5-i*.7),2.5,col+'99');
  c.translate(x,y);c.scale(d,1);
  if(id==='lightning'){p.poly([[-9,-9],[4,-9],[0,-2],[10,-2],[-4,10],[0,2],[-8,2]],'#fff4b1',col,1.3)}
  else if(id==='fire'){p.path([['M',-14,0],['Q',-2,-13,5,-8],['Q',17,0,5,8],['Q',-2,13,-14,0],['Z']],p.grad(-14,0,10,0,col,'#fff3b1'),col)}
@@ -112,9 +112,9 @@ function scenery(c,{chapter,world,cam=0,time=0,palette:p0}){
  const p=pen(c),[type,base,dark,trim]=theme(chapter,world),t=time;
  const W=960,H=420;p.box(0,0,W,H,p.grad(0,0,0,H,p0.sky,p0.horizon));
  p.glow(770-cam*.045,78,130,trim);p.oval(770-cam*.045,78,43,43,trim+'bb');
- for(let i=0;i<40;i++){const x=((i*167-cam*.045)%990+990)%990,y=18+hash(i+5)*170;p.oval(x,y,1+hash(i)*1.2,1,trim+'65')}
+ for(let i=0;i<(root.MicroPlayPrefs?.lite?12:40);i++){const x=((i*167-cam*.045)%990+990)%990,y=18+hash(i+5)*170;p.oval(x,y,1+hash(i)*1.2,1,trim+'65')}
  for(let i=-1;i<7;i++){const x=i*190-(cam*.16)%190,h=60+hash(i+20)*115;p.poly([[x-70,278],[x+40,278-h],[x+135,278]],p0.mount)}
- for(let i=-1;i<8;i++){const x=i*155-(cam*.38)%155,y=265+hash(i+12)*26;
+ for(let i=-1;i<8;i+=(root.MicroPlayPrefs?.lite?2:1)){const x=i*155-(cam*.38)%155,y=265+hash(i+12)*26;
   if(['forest','garden','oasis'].includes(type)){
    p.line(x,y,x+5,y-92,dark,10);for(let j=0;j<6;j++){let a=j*Math.PI/3;p.oval(x+5+Math.cos(a)*28,y-81+Math.sin(a)*21,28,21,j%2?dark:p0.tree);p.oval(x+Math.cos(a)*27,y-88+Math.sin(a)*20,17,7,base+'45')}
   }else if(['mine','mirror'].includes(type)){
@@ -128,11 +128,11 @@ function scenery(c,{chapter,world,cam=0,time=0,palette:p0}){
   }else if(type==='fortress'){p.box(x-43,y-92,86,92,dark);for(let j=0;j<4;j++)p.box(x-43+j*24,y-104,15,20,dark);p.glow(x,y-49,31,'#ffb77c');p.box(x-8,y-70,16,45,base)}
   else{p.glow(x,y-75,62,base);p.oval(x,y-75,46,65,null,base+'99',2);p.oval(x,y-75,32,49,null,trim+'65',1);for(let j=0;j<6;j++){const a=j*Math.PI/3+t/2400;p.gem(x+Math.cos(a)*45,y-75+Math.sin(a)*62,4,base)}p.gem(x,y-75,19,base)}
  }
- for(let i=0;i<10;i++){const x=((i*137-cam*.21+t*.009)%1100+1100)%1100-70;p.oval(x,300+i%4*22,74,9,'#e7f3ff18')}
+ for(let i=0;i<(root.MicroPlayPrefs?.lite?3:10);i++){const x=((i*137-cam*.21+t*.009)%1100+1100)%1100-70;p.oval(x,300+i%4*22,74,9,'#e7f3ff18')}
 }
 function platform(c,{chapter,world,a,b,y=334,main=false,cam=0,time=0,moving=false}){if(b<cam-80||a>cam+1040)return;const p=pen(c),[type,base,dark,trim]=theme(chapter,world),w=b-a,depth=main?54:24;const l=Math.max(a,cam-50),r=Math.min(b,cam+1010);
  p.poly([[a,y+8],[b,y+8],[b-12,y+depth],[a+w*.6,y+depth+20],[a+12,y+depth]],p.grad(a,y,a,y+depth+20,base,dark));p.box(a,y,w,10,p.grad(a,y,a,y+10,trim,base));p.line(a,y+1,b,y+1,'#f7f4dfaa',1.5);
- for(let x=Math.ceil(l/27)*27;x<r-6;x+=27){if(['forest','garden','oasis'].includes(type)){p.poly([[x,y+9],[x+7,y+24],[x+14,y+9]],dark);p.line(x+4,y,x+7,y-5,base,1.5)}else if(['factory','workshop'].includes(type)){p.oval(x+6,y+17,6,6,dark,trim,.8);p.oval(x+6,y+17,2,2,base)}else if(['mine','mirror','orbit','eclipse','rune'].includes(type)){p.gem(x+6,y+15,6,base)}else{p.line(x,y+15,x+19,y+15,dark,1);p.line(x+8,y+15,x+8,y+24,dark,1);if(x%81===0)emblem(p,x+8,y+28,type,trim,dark)}}
+ for(let x=Math.ceil(l/27)*27;x<r-6;x+=(root.MicroPlayPrefs?.lite?54:27)){if(['forest','garden','oasis'].includes(type)){p.poly([[x,y+9],[x+7,y+24],[x+14,y+9]],dark);p.line(x+4,y,x+7,y-5,base,1.5)}else if(['factory','workshop'].includes(type)){p.oval(x+6,y+17,6,6,dark,trim,.8);p.oval(x+6,y+17,2,2,base)}else if(['mine','mirror','orbit','eclipse','rune'].includes(type)){p.gem(x+6,y+15,6,base)}else{p.line(x,y+15,x+19,y+15,dark,1);p.line(x+8,y+15,x+8,y+24,dark,1);if(x%81===0)emblem(p,x+8,y+28,type,trim,dark)}}
  if(moving){p.oval((a+b)/2,y+depth+12,Math.min(w*.35,36),5,null,base,1.3);p.gem((a+b)/2,y+depth+12,4,trim)}
 }
 function victory(c,{chapter,world,character,colors,accessory,armor,magic,time=0,name=''}){const p=pen(c),[type,base,dark,trim]=theme(chapter,world);p.box(0,0,960,300,p.grad(0,0,960,300,dark,'#233c54'));p.glow(480,160,185,base);for(let i=0;i<45;i++){const x=hash(i+3)*960,y=hash(i+88)*300;p.gem(x,y,2+hash(i+16)*3,i%2?base:trim)}p.oval(480,260,290,15,'#152c40aa');enemy(c,{chapter,world,x:610,y:260,boss:true,friendly:true,scale:2.1,time});root.MicroHeroes?.draw(c,{character,...colors,accessory,armor,magic,x:335,y:260,scale:2.25,time,pose:'victory'});p.text(480,31,'GARDIEN LIBÉRÉ',trim,23);p.text(480,55,name,'#f6eddc',16)}
