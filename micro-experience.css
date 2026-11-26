@@ -1,0 +1,29 @@
+/* V37 — fantasy interface, no animated layout in the playfield. */
+:root{--ui-gold:#f1d8a4}
+.panel:not(.play){border:1px solid #d5c6a066;box-shadow:0 12px 40px #070d18a0,inset 0 0 0 3px #101e2b55}
+.screen-enter{animation:micro-enter .26s ease-out both}
+@keyframes micro-enter{from{opacity:.55}to{opacity:1}}
+.storyart,.victoryart{position:relative;overflow:hidden;border:1px solid #d7be88aa;box-shadow:0 8px 26px #050b16aa}
+.storycopy{padding:clamp(12px,3vw,26px)}
+.storycopy .kicker{color:var(--ui-gold)}
+.worldcard .worldthumb{aspect-ratio:3/1;object-fit:cover}
+.worldcard{transition:box-shadow .16s,border-color .16s;isolation:isolate}
+.worldcard[aria-pressed=true]{box-shadow:0 0 0 2px var(--accent),0 6px 20px #0005}
+.worldcard .worldnumber{border-radius:8px;font-variant-numeric:tabular-nums}
+.worldcard .worldstatus{min-height:1.5em}
+.spellentry{grid-template-columns:58px minmax(0,1fr);align-content:start;align-items:center;gap:4px 10px}
+.spellentry .item-art{width:58px;height:58px;grid-row:1/3;border-radius:9px;border:1px solid var(--spell);object-fit:contain}
+.spellentry strong,.spellentry small{grid-column:2;min-width:0}
+.spellentry:not(:has(.item-art)){grid-template-columns:1fr}
+.spellentry:not(:has(.item-art)) strong,.spellentry:not(:has(.item-art)) small{grid-column:1}
+.spellchoice:has(.item-art){display:flex;align-items:center;justify-content:center;gap:5px;text-align:left;white-space:normal}
+.item-art.compact{width:29px;height:29px;flex:0 0 29px;border:1px solid var(--spell);border-radius:6px;object-fit:contain}
+#chapterGrade:not(:empty),#finishGrade:not(:empty){border:1px solid #d8c28c;border-left:4px solid var(--ui-accent);background:linear-gradient(110deg,#223d4e,#142638);color:#ffebbf;font-size:clamp(15px,2.4vw,20px);font-weight:750;padding:12px;border-radius:10px;line-height:1.45}
+.finish .stars{font-size:clamp(38px,7vw,72px);line-height:1.1;filter:drop-shadow(0 3px 4px #0006)}
+.finish .victory-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;width:100%;margin-top:8px}
+.finish .victory-actions>*{flex:1 1 155px;max-width:250px;min-height:48px}
+.finish #nextWorld:not([hidden]){background:linear-gradient(#f3e5b4,#e3bd78);color:#293544}
+.finish #finishScore{max-width:62ch;line-height:1.6}
+@media(max-width:600px){.spellentry{grid-template-columns:40px minmax(0,1fr);gap:4px 6px;padding:8px}.spellentry .item-art{width:40px;height:40px}.spellentry small{font-size:11px}}
+@media(max-width:380px){.spellentry{grid-template-columns:1fr}.spellentry .item-art{grid-row:auto;grid-column:1}.spellentry strong,.spellentry small{grid-column:1}}
+@media(prefers-reduced-motion:reduce){.screen-enter{animation:none!important}.worldcard{transition:none!important}}
