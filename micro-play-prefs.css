@@ -1,0 +1,26 @@
+/* V29 — device options, tactile comfort and contrast. */
+.device-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;align-items:center;padding:10px;border:1px solid #8198b275;border-radius:12px;background:#17283d;color:#eef4f7}
+.device-options label{font-size:14px;font-weight:650}.device-options select{min-width:0;width:100%;min-height:44px;background:#102033;border:1px solid #94aac1;border-radius:8px;color:#fff4df;font:inherit;padding:5px}
+.device-options .device-check{grid-column:1/-1;display:flex;align-items:center;gap:8px;min-height:44px}
+.device-check input{width:20px;height:20px;accent-color:#acd9c3;flex:0 0 auto}
+.device-note{font-size:12px;color:#cbd9e6;grid-column:1/-1}
+#rotateTip{font-size:12px;padding:4px 8px;border-radius:7px;background:#24364c;color:#f2dfa9;line-height:1.3}
+@media(orientation:landscape),(pointer:fine){#rotateTip{display:none!important}}
+body[data-control-hand="left"] .screen .controls{flex-direction:row-reverse}
+body[data-control-size="large"] .screen .control{min-width:clamp(54px,11vw,105px);min-height:clamp(55px,10vw,90px)}
+body[data-control-size="compact"] .screen .control{min-width:44px;min-height:44px;font-size:16px}
+body[data-control-opacity="solid"] .screen .control{background:#20364f}
+body[data-control-opacity="solid"] .screen .control.jump{background:#a4e4c9}
+body[data-control-opacity="solid"] .screen .control.cast{background:#7865bd}
+body[data-control-opacity="light"] .screen .control{background:#20364f99;border-color:#e3efffc4}
+body[data-control-opacity="light"] .screen .control.jump{background:#a4e4c9aa}
+body[data-control-opacity="light"] .screen .control.cast{background:#7865bdaa}
+body[data-high-contrast="true"] .screen .control,body[data-high-contrast="true"] .answers button{border:2px solid #fff;color:#fff;background:#172b44}
+body[data-high-contrast="true"] .screen .control.jump{background:#ebf9de;color:#102031}
+body[data-high-contrast="true"] .screen .control.cast{background:#51397c;color:#fff}
+body[data-high-contrast="true"] .answers button.correct{border:3px solid #fff;background:#14513b;color:#fff}
+body[data-high-contrast="true"] .answers button.bad{border:3px dashed #fff;background:#702b3c;color:#fff}
+body[data-high-contrast="true"] .equation,body[data-high-contrast="true"] .dialog{border-color:white;color:white}
+body[data-high-contrast="true"] .worldcard[aria-pressed=true]{outline:3px solid #fff;outline-offset:-3px}
+@media(max-width:450px){body[data-control-size="large"] .screen .control{min-width:clamp(48px,15vw,68px);min-height:clamp(54px,16vw,76px)}.device-options{grid-template-columns:1fr;gap:5px}}
+@media(max-height:500px) and (orientation:landscape){body[data-control-size="large"] .play.gamefull .screen .control{min-height:56px;min-width:72px}.device-options{gap:4px 8px;padding:6px}.device-options select{min-height:36px}.device-options .device-check{min-height:30px}}
