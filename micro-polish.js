@@ -1,4 +1,4 @@
-/* V25 – Original illustrated bestiary, scenery and spell effects. Canvas only. */
+/* V35 — original fantasy materials, creatures and magical effects. Canvas only. */
 (function(root){
 'use strict';
 const themes={
@@ -29,38 +29,38 @@ function creature(c,o){
  const [type,base,shade,trim]=theme(o.chapter,o.world),p=pen(c),friendly=!!o.friendly,light=friendly?'#9ce5be':base,dark=friendly?'#34635a':shade,ink='#18273b',t=o.time||0,k=o.kind,hover=k==='wraith',walk=Math.sin(t/105+o.x*.03),bob=hover?Math.sin(t/165+o.x*.04)*2:Math.abs(walk)*1.5,skin=p.grad(-23,-38,24,0,light,dark),face=p.grad(-12,-27,13,-8,'#415169','#1a263b');
  c.save();c.translate(o.x,o.y);c.scale((o.scale||1)*(o.dir===-1?-1:1),o.scale||1);
  if(o.flash>0&&!friendly)c.rotate(-Math.sin(t/40)*.08);
- if(!hover)p.oval(0,0,23,4,'#10233155');c.translate(0,-bob);
+ if(!hover){p.oval(0,0,24,5,'#10233135');p.oval(0,0,16,2.6,'#08182777')}else p.oval(0,1,16,2.5,'#10233128');c.translate(0,-bob);
  // Each of the 16 habitats has distinct silhouettes and material motifs.
  if(['forest','garden','oasis'].includes(type)&&k!=='beetle'){
   if(type==='garden')p.path([['M',-3,-31],['Q',-17,-50,-25,-38],['Q',-11,-32,-3,-31],['Q',3,-48,19,-43],['Q',17,-31,-3,-31],['Z']],light,ink);
   else if(type==='forest')for(const s of [-1,1]){p.line(s*8,-28,s*16,-42,trim,2.4);p.line(s*13,-36,s*22,-39,trim,1.8)}
   else p.poly([[-20,-20],[-13,-42],[0,-32],[13,-42],[20,-20]],trim,ink);
   for(const s of [-1,1])p.oval(s*12+walk*2,-2,8,4,dark,ink);
-  p.path([['M',-23,-6],['Q',-29,-22,-12,-30],['Q',0,-38,13,-30],['Q',28,-21,23,-6],['Q',0,4,-23,-6],['Z']],skin,ink,1.6);p.oval(-10,-25,8,3,'#ffffff48');
+  p.path([['M',-23,-6],['Q',-29,-22,-12,-30],['Q',0,-38,13,-30],['Q',28,-21,23,-6],['Q',0,4,-23,-6],['Z']],skin,ink,1.6);p.oval(-10,-25,8,3,'#ffffff48');for(const s of [-1,1]){p.path([['M',s*19,-24],['Q',s*23,-15,s*17,-9],['Q',s*13,-5,s*9,-6]],null,dark+'aa',1.3);if(!root.MicroPlayPrefs?.lite)for(let j=0;j<4;j++)p.line(s*(14+j%2*4),-23+j*3,s*(11+j%2*4),-21+j*3,trim+'70',.9)}
  }else if(k==='beetle'||type==='papyrus'){
   for(const s of [-1,1])for(let i=0;i<3;i++){p.line(s*13,-18+i*5,s*24,-12+i*4,dark,4);p.line(s*24,-12+i*4,s*(25+walk*3),-2,ink,2)}
-  p.oval(0,-17,24,19,skin,ink,1.5);p.path([['M',0,-35],['Q',-20,-31,-21,-14],['L',0,-8],['L',21,-14],['Q',20,-31,0,-35],['Z']],p.grad(-22,-35,22,-8,trim,light),ink);p.line(0,-34,0,-9,ink,1.5);for(const s of [-1,1]){p.line(s*10,-31,s*17,-40,trim,2);p.oval(s*17,-40,2.5,2.5,light,ink)}
+  p.oval(0,-17,24,19,skin,ink,1.5);p.path([['M',0,-35],['Q',-20,-31,-21,-14],['L',0,-8],['L',21,-14],['Q',20,-31,0,-35],['Z']],p.grad(-22,-35,22,-8,trim,light),ink);p.line(0,-34,0,-9,ink,1.5);for(const s of [-1,1]){p.path([['M',s*2,-32],['Q',s*18,-26,s*18,-14]],null,'#ffffff90',1.2);p.path([['M',s*5,-27],['Q',s*14,-22,s*14,-15]],null,dark,1);if(!root.MicroPlayPrefs?.lite)for(let j=0;j<4;j++)p.oval(s*(6+j*3),-23+j*1.6,1,1,dark)}for(const s of [-1,1]){p.line(s*10,-31,s*17,-40,trim,2);p.oval(s*17,-40,2.5,2.5,light,ink)}
  }else if(hover){
   if(type==='mirror'){for(let i=0;i<3;i++)p.gem(-23+i*23,-21+Math.sin(t/220+i)*7,8,light);p.poly([[0,-45],[19,-27],[14,-7],[0,0],[-14,-7],[-19,-27]],skin,ink,1.3);p.poly([[0,-38],[12,-25],[9,-11],[0,-5],[-10,-11],[-12,-25]],face,trim)}
-  else{p.path([['M',0,-44],['Q',-25,-39,-25,-16],['L',-27,-4],['L',-13,-11+walk*2],['L',-4,0],['L',8,-10],['L',23,-2],['Q',23,-37,0,-44],['Z']],skin,ink,1.5);p.oval(0,-24,14,13,face);for(const s of [-1,1])p.line(s*19,-22,s*13,-9,trim+'99',1.5)}
+  else{p.path([['M',0,-44],['Q',-25,-39,-25,-16],['L',-27,-4],['L',-13,-11+walk*2],['L',-4,0],['L',8,-10],['L',23,-2],['Q',23,-37,0,-44],['Z']],skin,ink,1.5);p.oval(0,-24,14,13,face);for(const s of [-1,1]){p.path([['M',s*4,-40],['Q',s*20,-32,s*19,-18],['Q',s*17,-10,s*23,-3]],null,trim+'99',1.5);p.path([['M',s*12,-37],['Q',s*23,-29,s*22,-20]],null,light+'bb',1);p.path([['M',s*13,-19],['Q',s*10,-13,s*12,-7]],null,dark,1.1)}}
   if(type==='orbit'||type==='rune'||type==='eclipse'){for(let i=0;i<3;i++){let a=t/650+i*2.094;p.gem(Math.cos(a)*26,-21+Math.sin(a)*23,3,trim)}}
   if(type==='obelisk'||type==='temple')p.poly([[-15,-36],[-11,-45],[0,-40],[11,-45],[15,-36]],trim,ink);
  }else if(k==='dragon'||type==='fortress'){
   for(const s of [-1,1])p.poly([[s*6,-21],[s*31,-40+walk*3],[s*27,-10],[s*16,-16]],skin,ink);
-  p.path([['M',-15,-9],['Q',-39,-2,-31,-20],['L',-27,-8],['L',-14,-19],['Z']],skin,ink);p.oval(0,-16,20,16,skin,ink,1.4);
+  p.path([['M',-15,-9],['Q',-39,-2,-31,-20],['L',-27,-8],['L',-14,-19],['Z']],skin,ink);p.oval(0,-16,20,16,skin,ink,1.4);for(const s of [-1,1]){p.path([['M',s*10,-23],['Q',s*18,-17,s*14,-8],['L',s*19,-2],['L',s*7,-2],['Z']],skin,ink,1);for(let j=0;j<3;j++)p.line(s*(10+j*3),-4,s*(11+j*3),-1,trim,1);p.line(s*8,-23,s*28,-34+walk*3,trim+'a0',1)}if(!root.MicroPlayPrefs?.lite)for(let j=0;j<8;j++){const xx=-12+j%4*7,yy=-24+Math.floor(j/4)*7;p.path([['M',xx,yy],['Q',xx+2,yy+4,xx+5,yy]],null,trim+'88',.8)}
   for(const s of [-1,1])p.poly([[s*7,-26],[s*14,-40],[s*16,-24]],trim,ink);
  }else{
   const machine=['factory','workshop'].includes(type)||k==='robot';
   for(const s of [-1,1]){p.poly([[s*5,-14],[s*16,-14],[s*17+walk*s,-3],[s*22+walk*s,0],[s*5+walk*s,0]],skin,ink);p.oval(s*22,-16+walk*s,8,10,skin,ink)}
   p.poly([[-20,-26],[-13,-36],[13,-36],[20,-26],[16,-6],[0,-2],[-16,-6]],skin,ink,1.5);
-  p.poly([[-13,-35],[-9,-42],[10,-42],[15,-34],[12,-21],[-12,-21]],p.grad(-13,-42,15,-21,trim,dark),ink);p.oval(0,-31,12,6,face);
+  p.poly([[-13,-35],[-9,-42],[10,-42],[15,-34],[12,-21],[-12,-21]],p.grad(-13,-42,15,-21,trim,dark),ink);p.oval(0,-31,12,6,face);for(const s of [-1,1]){p.line(s*10,-40,s*13,-35,trim+'bc',1.1);p.path([['M',s*17,-24],['L',s*10,-18],['L',s*13,-9]],null,dark,1.5);if(machine){p.oval(s*15,-22,2,2,trim,dark,.8);for(let j=0;j<3;j++)p.line(s*5,-17+j*3,s*12,-17+j*3,ink,1)}else{p.path([['M',s*15,-25],['L',s*6,-20],['L',s*8,-14],['L',s*2,-10]],null,trim+'90',1.2)}}
   if(machine){p.line(0,-42,0,-49,trim,1.5);p.gem(0,-50,3,trim);for(const s of [-1,1]){p.oval(s*20,-16,4,4,dark);p.oval(s*20,-16,2,2,trim)}}
   else {p.line(-16,-23,-7,-13,trim,1.2);p.line(-7,-13,-13,-8,trim,1.2)}
   if(type==='library'){for(const s of [-1,1]){p.line(s*8,-39,s*23,-39,trim,1.5);p.line(s*20,-39,s*22,-24,trim);p.oval(s*22,-24,6,2.5,trim,ink)}}
   if(type==='tomb'||type==='mine')for(const s of [-1,1])p.gem(s*19,-26,5,light);
  }
  const ey=hover?-25: k==='golem'||k==='robot'||['mine','factory','workshop','library','tomb'].includes(type)?-30:-19;
- for(const s of [-1,1]){p.oval(s*7,ey,4,4.6,friendly?'#f8ffdf':'#ffe6ad',ink,.8);p.oval(s*7+1,ey+.2,1.8,2.8,ink);p.oval(s*7+.5,ey-1.6,1,1,'#fff');if(!friendly)p.line(s*7-4,ey-5,s*7+4,ey-3,ink,1.5)}
+ for(const s of [-1,1]){p.oval(s*7,ey,4,4.6,friendly?'#f8ffdf':'#ffe6ad',ink,.8);p.oval(s*7+1,ey+.2,1.8,2.8,ink);p.oval(s*7+.5,ey-1.6,1,1,'#fff');if(!friendly)p.line(s*7-s*4,ey-3,s*7+s*4,ey-5,ink,1.5)}
  p.path([['M',-4,ey+8],['Q',0,ey+(friendly?12:6),5,ey+8]],null,ink,1.2);
  if(!hover)emblem(p,0,-8,type,trim,dark);
  if(friendly){for(let i=0;i<3;i++){const a=t/520+i*2.094;p.gem(Math.cos(a)*25,-17+Math.sin(a)*16,2.5,'#d7f5a9')}}
@@ -98,10 +98,10 @@ function enemy(c,o){
  if(o.attack&&!o.friendly){const v=.5+.5*Math.sin(o.time/55);p.glow(-30,-32,23+v*12,'#ffc091');p.oval(-30,-32,15+v*8,15+v*8,null,'#ffdea4',2)}
  c.restore()
 }
-function projectile(c,shot,t,col,hostile=false){const p=pen(c),id=shot.spell||shot.element||'light',x=shot.x,y=shot.y,d=shot.dir||1;c.save();p.glow(x,y,hostile?21:24,col);for(let i=1;i<(root.MicroPlayPrefs?.lite?3:6);i++)p.oval(x-d*i*6,y+Math.sin(i+t/65)*2,Math.max(1,5-i*.7),2.5,col+'99');
+function projectile(c,shot,t,col,hostile=false){const p=pen(c),id=shot.spell||shot.element||'light',x=shot.x,y=shot.y,d=shot.dir||1;c.save();p.glow(x,y,hostile?21:24,col);const lite=root.MicroPlayPrefs?.lite;for(let i=1;i<(lite?3:8);i++){c.globalAlpha=Math.max(.12,.85-i*.09);p.oval(x-d*i*5.5,y+Math.sin(i+t/65)*2,Math.max(1,5-i*.55),Math.max(.7,3-i*.3),col);if(!lite&&i%2===0)p.oval(x-d*i*6,y+Math.cos(i+t/90)*5,1.1,1.1,'#fff8dd')}c.globalAlpha=1;
  c.translate(x,y);c.scale(d,1);
  if(id==='lightning'){p.poly([[-9,-9],[4,-9],[0,-2],[10,-2],[-4,10],[0,2],[-8,2]],'#fff4b1',col,1.3)}
- else if(id==='fire'){p.path([['M',-14,0],['Q',-2,-13,5,-8],['Q',17,0,5,8],['Q',-2,13,-14,0],['Z']],p.grad(-14,0,10,0,col,'#fff3b1'),col)}
+ else if(id==='fire'){p.path([['M',-18,0],['Q',-6,-3,-9,-9],['Q',0,-7,4,-10],['Q',18,0,5,9],['Q',-5,11,-18,0],['Z']],p.grad(-18,0,12,0,col,'#fff3b1'),col);p.path([['M',-7,1],['Q',4,-7,9,0],['Q',4,6,-7,1],['Z']],'#fff9dd')}
  else if(['water','air'].includes(id)){p.oval(0,0,9,7,null,col,2.3);p.oval(2,0,5,4,'#e7faff');p.oval(-4,-2,4,2,'#ffffff9a')}
  else if(['metal','earth','crystal'].includes(id)){c.rotate(t/130);p.gem(0,0,10,col)}
  else if(['shadow','astral','rune'].includes(id)){p.oval(0,0,8,8,id==='shadow'?'#3b2b66':col,'#f7eaff',1.4);p.oval(0,0,13,10,null,col,1.3)}
