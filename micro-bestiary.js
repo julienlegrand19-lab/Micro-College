@@ -6,8 +6,8 @@ const designs={
  pyramides:[['sphinx','#e5be79','#79654e','sun'],['veil','#b0bfd8','#3d4564','eye'],['scarab','#dbb45a','#3e695f','sun'],['sand','#cc9a79','#6c4a4b','sand'],['pharaoh','#c8b3e4','#46385c','ankh']],
  litteral:[['scribe','#9dbda4','#395b59','book'],['automaton','#d4b87b','#4f425d','gear'],['mirror','#a4d5f3','#454d80','diamond'],['balance','#c7a8a0','#574658','balance'],['archon','#c8a9eb','#392a5a','rune']]
 };
-function draw(ctx,{chapter='relatifs',world=0,kind='golem',x=0,y=0,time=0,scale=1,dir=1,boss=false,friendly=false,flash=0,attack=false,exposed=false}={}){
- const data=designs[chapter]?.[world]||designs.relatifs[0],name=boss?data[0]:kind,light=friendly?'#9ae2bd':data[1],dark=friendly?'#365d64':data[2],ink='#19263b',edge='#f0e2bd',eyes=friendly?'#f7ffdc':'#ffe3a2',t=time;
+function draw(ctx,{chapter='relatifs',world=0,kind='golem',x=0,y=0,time=0,scale=1,dir=1,boss=false,friendly=false,flash=0,attack=false,exposed=false,purity=0}={}){
+ const data=designs[chapter]?.[world]||designs.relatifs[0],name=boss?data[0]:kind,light=friendly?'#9ae2bd':boss&&root.MicroBossStage?root.MicroBossStage.mix(data[1],'#9ae2bd',Math.min(1,Math.max(0,purity))):data[1],dark=friendly?'#365d64':boss&&root.MicroBossStage?root.MicroBossStage.mix(data[2],'#365d64',Math.min(1,Math.max(0,purity))):data[2],ink='#19263b',edge='#f0e2bd',eyes=friendly?'#f7ffdc':'#ffe3a2',t=time;
  const grad=(x,y,X,Y,a,b)=>{const g=ctx.createLinearGradient(x,y,X,Y);g.addColorStop(0,a);g.addColorStop(1,b);return g};
  const P=(d,fill,stroke=ink,w=1.15)=>{ctx.beginPath();for(const [cmd,...a] of d){if(cmd==='M')ctx.moveTo(...a);else if(cmd==='L')ctx.lineTo(...a);else if(cmd==='Q')ctx.quadraticCurveTo(...a);else if(cmd==='C')ctx.bezierCurveTo(...a);else if(cmd==='Z')ctx.closePath()}if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=w;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke()}};
  const E=(x,y,rx,ry,c,stroke=null,w=1)=>{ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fillStyle=c;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=w;ctx.stroke()}};
