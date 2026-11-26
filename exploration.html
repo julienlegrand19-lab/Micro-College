@@ -3,11 +3,13 @@
  const ground=[[0,940],[1030,1900],[1995,2950],[3050,4350]];
  const ledges=[[310,395,269],[430,515,230],[1110,1205,266],[1250,1345,224],[2150,2250,268],[2320,2405,222],[3200,3300,266],[3350,3445,223]];
  const coins=[{x:350,y:235},{x:470,y:196},{x:1150,y:232},{x:1298,y:190},{x:2200,y:234},{x:2360,y:188},{x:3250,y:232},{x:3398,y:189}];
+ const enemies=[{x:560,min:525,max:650,kind:'slime'},{x:1450,min:1375,max:1540,kind:'beetle'},{x:2520,min:2445,max:2590,kind:'slime'},{x:3540,min:3480,max:3620,kind:'beetle'},{x:3950,min:3880,max:4030,kind:'slime'}];
+ const items=[{x:230,y:306,kind:'shield'},{x:470,y:177,kind:'star'},{x:1090,y:306,kind:'heart'},{x:1298,y:170,kind:'shield'},{x:2110,y:306,kind:'shield'},{x:2360,y:167,kind:'star'},{x:3140,y:306,kind:'heart'},{x:3398,y:167,kind:'shield'},{x:3790,y:306,kind:'star'}];
  const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
  const rand=(a,b,r=Math.random)=>a+Math.floor(r()*(b-a+1));
  const fmt=n=>n<0?'−'+Math.abs(n):String(n);
  const signed=n=>n>0?'+'+n:fmt(n);
- function create(level=0){return {level,x:110,y:334,vx:0,vy:0,grounded:true,face:1,checkpoint:110,opened:[false,false,false,false],collected:coins.map(()=>false),crystals:0,first:0,falls:0,camera:0,finished:false,gate:null}}
+ function create(level=0){return {level,x:110,y:334,vx:0,vy:0,grounded:true,face:1,checkpoint:110,opened:[false,false,false,false],collected:coins.map(()=>false),crystals:0,first:0,falls:0,camera:0,finished:false,gate:null,hp:3,shield:0,star:0,invul:0,defeated:0,hits:0,items:items.map(()=>false),enemies:enemies.map((e,i)=>({...e,dir:i%2?1:-1,alive:true}))}}
  function question(level,gate,index,r=Math.random){
    const b=[5,10,20][level];
    let a=rand(-b,b,r),d=rand(-b,b,r);
@@ -21,6 +23,7 @@
  function step(s,input,dt){
    dt=clamp(dt,0,.035);
    if(s.finished||s.gate!==null)return null;
+   s.star=Math.max(0,s.star-dt);s.invul=Math.max(0,s.invul-dt);for(const e of s.enemies)if(e.alive){e.x+=(e.kind==='slime'?48:67)*e.dir*dt;if(e.x<=e.min||e.x>=e.max){e.x=clamp(e.x,e.min,e.max);e.dir*=-1}}
    const direction=(input.right?1:0)-(input.left?1:0);
    s.vx=direction*265;if(direction)s.face=direction;
    if(input.jump&&s.grounded){s.vy=-485;s.grounded=false}
@@ -28,18 +31,29 @@
    s.x=clamp(s.x+s.vx*dt,18,4320);
    for(let i=0;i<gates.length;i++){if(!s.opened[i]&&s.x+15>=gates[i].x&&s.x-15<=gates[i].x+30){s.x=gates[i].x-16;s.vx=0;s.gate=i;return {type:'gate',i}}}
    s.vy+=1060*dt;s.y+=s.vy*dt;s.grounded=false;
+   const fallingSpeed=s.vy;
    if(s.vy>=0){
      let surfaces=ground.filter(([a,b])=>s.x>=a+5&&s.x<=b-5).map(()=>334);
      surfaces.push(...ledges.filter(([a,b])=>s.x>=a-5&&s.x<=b+5).map(x=>x[2]));
      for(const y of surfaces.sort((a,b)=>a-b))if(prevY<=y+.8&&s.y>=y){s.y=y;s.vy=0;s.grounded=true;break}
    }
-   if(s.y>480){s.x=s.checkpoint;s.y=334;s.vy=0;s.grounded=true;s.falls++;return {type:'fall'}}
+   if(s.y>480){respawn(s);s.falls++;return {type:'fall'}}
+   for(let i=0;i<items.length;i++){const p=items[i];if(!s.items[i]&&Math.hypot(s.x-p.x,s.y-27-p.y)<34){s.items[i]=true;if(p.kind==='shield')s.shield=1;else if(p.kind==='star')s.star=8;else s.hp=Math.min(3,s.hp+1);return {type:'item',kind:p.kind}}}
+   for(const e of s.enemies){if(!e.alive||Math.abs(s.x-e.x)>25||s.y<307||s.y-55>334)continue;
+     if(s.star>0||(fallingSpeed>0&&prevY<=310&&s.y>=307)){e.alive=false;s.defeated++;s.y=Math.min(s.y,307);s.vy=-255;s.grounded=false;return {type:'enemy',kind:e.kind}}
+     if(s.invul>0)continue;
+     s.hits++;s.invul=1.6;
+     if(s.shield){s.shield=0;return {type:'shieldHit'}}
+     s.hp--;if(s.hp<=0){respawn(s);return {type:'recover'}}
+     s.vy=-220;s.grounded=false;return {type:'hit'};
+   }
    for(let i=0;i<coins.length;i++){const c=coins[i];if(!s.collected[i]&&Math.hypot(s.x-c.x,s.y-24-c.y)<28){s.collected[i]=true;return {type:'coin',i}}}
    if(s.x>=4160&&s.opened.every(Boolean)){s.finished=true;return {type:'finish'}}
    return null;
  }
+ function respawn(s){s.x=s.checkpoint;s.y=334;s.vx=0;s.vy=0;s.grounded=true;s.hp=3;s.invul=2;}
  function open(s,i){if(s.gate!==i||s.opened[i])return false;s.opened[i]=true;s.checkpoint=gates[i].x+65;s.gate=null;s.x=s.checkpoint;s.y=334;s.vy=0;s.grounded=true;return true}
- return {gates,ground,ledges,coins,create,question,step,open,fmt,signed,clamp}
+ return {gates,ground,ledges,coins,enemies,items,create,question,step,open,fmt,signed,clamp}
 }
 (function game(){
  const E=platformEngine(),$=id=>document.getElementById(id),c=$('canvas'),ctx=c.getContext('2d');
