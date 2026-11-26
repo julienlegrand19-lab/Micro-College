@@ -23,22 +23,14 @@ function geometryQuestion(topic,level,gate,index,r=Math.random){
   if(labels){for(const a of ['A','B','C','D','S']){const p=P[a];s+=txt([p[0]+(a==='A'?-9:a==='C'?10:0),p[1]+(a==='S'?-5:a==='D'?-5:15)],a)}if(highlight==='height'||mode==='wrongheight')s+=txt([P.H[0]+13,P.H[1]+5],'H','#b65236')}
   return svg(s)
  }
+ const netSide=rand(42,58),netSlant=rand(34,49);
  function net(base,variant){
-  const cx=120,cy=80;
-  let s='';
-  if(base===4){
-   const p=[[91,51],[149,51],[149,109],[91,109]],tips=[[120,5],[195,80],[120,155],[45,80]];
-   s+=poly(p,'#f2d49b');
-   let count=variant==='few'?3:4;
-   for(let i=0;i<count;i++){let tip=tips[i].slice();if(variant==='unequal'&&i===1)tip=[165,80];s+=poly([p[i],p[(i+1)%4],tip],'#b5d8d1')}
-   if(variant==='extra')s+=poly([[149,51],[195,80],[193,27]],'#d9a3a0');
-  }else{
-   const side=58,h=side*Math.sqrt(3)/2,p=[[120,30],[120-side/2,30+h],[120+side/2,30+h]],tips=[[120-side,30],[120,30+2*h],[120+side,30]];
-   s+=poly(p,'#f2d49b');
-   for(let i=0;i<(variant==='few'?2:3);i++){let tip=tips[i].slice();if(variant==='unequal'&&i===0)tip=[92,59];s+=poly([p[i],p[(i+1)%3],tip],'#b5d8d1')}
-   if(variant==='extra')s+=poly([p[1],tips[0],[120-side*1.5,30+h]],'#d9a3a0');
-   return svg('<g transform="translate(0 15)">'+s+'</g>',240,162)
-  }
+  const n=base,side=netSide,rad=side/(2*Math.sin(Math.PI/n)),cx=120,cy=81;
+  // All lateral triangles have equal edge lengths in the valid regular-pyramid net.
+  const p=Array.from({length:n},(_,i)=>{const a=-Math.PI/2+Math.PI/n+2*Math.PI*i/n;return [cx+rad*Math.cos(a),cy+rad*Math.sin(a)]});
+  const tips=p.map((v,i)=>{const w=p[(i+1)%n],mx=(v[0]+w[0])/2,my=(v[1]+w[1])/2,len=Math.hypot(mx-cx,my-cy);const ht=variant==='unequal'&&i===0?netSlant*.55:netSlant;return [mx+(mx-cx)/len*ht,my+(my-cy)/len*ht]});
+  let s=poly(p,'#f2d49b');for(let i=0;i<(variant==='few'?n-1:n);i++)s+=poly([p[i],p[(i+1)%n],tips[i]],'#b5d8d1');
+  if(variant==='extra'){const v=p[0],w=tips[0],z=p[1],dx=w[0]-v[0],dy=w[1]-v[1],k=2*((z[0]-v[0])*dx+(z[1]-v[1])*dy)/(dx*dx+dy*dy);const extra=[v[0]+k*dx-(z[0]-v[0]),v[1]+k*dy-(z[1]-v[1])];s+=poly([v,w,extra],'#d9a3a0')}
   return svg(s)
  }
  function result(label,v,alts,hint,explanation,figure='',cards=null){const rename=s=>typeof s==='string'?s.replace(/\b[ABCDSHM]+\b/g,w=>[...w].map(c=>labelsMap[c]).join('')):s;const renameFigure=s=>s.replace(/>([ABCDSHM])<\/text>/g,(_,c)=>'>'+labelsMap[c]+'</text>');if(topic===0||topic===1){label=rename(label);hint=rename(hint);explanation=rename(explanation);figure=renameFigure(figure);if(cards){cards=Object.fromEntries(Object.entries(cards).map(([k,s])=>[k,renameFigure(s)]))}else{v=rename(v);alts=alts.map(rename)}}let choices=shuffle([v,...alts]);if(cards){const order=choices.slice();const mapped={};const ids=['A','B','C','D'];order.forEach((old,i)=>mapped[ids[i]]=cards[old]);v=ids[order.indexOf(v)];cards=mapped;choices=ids;}if(new Set(choices).size!==4)throw Error('duplicate geometry choices');return {op:'geometry',topic,label,v,choices,hint,explanation,figure,cards}}
@@ -66,8 +58,10 @@ function geometryQuestion(topic,level,gate,index,r=Math.random){
   return result('Quel segment représente la hauteur de cette pyramide droite ?', '[SH]',['[SA]','[SC]','[AB]'],'La hauteur est perpendiculaire à la base.','S est à la verticale du centre H de la base.',pyramid('normal','height'));
  }
  if(topic===2){
-  const b=level===0?4:pick([3,4]);const name=b===4?'carrée':'triangulaire équilatérale';
-  if(rand(0,2)!==2){const cards={A:net(b,'valid'),B:net(b,'few'),C:net(b,'extra'),D:net(b,'unequal')};return result('Quel patron peut former une pyramide régulière à base '+name+' ?', 'A',['B','C','D'],'Il faut une base, une face triangulaire par côté et des arêtes latérales de même longueur.','Le bon patron comporte toutes les faces compatibles, sans face supplémentaire.', '',cards)}
+  const b=level===0?4:pick([3,4]);const name=b===4?'carrée':'triangulaire équilatérale';const variant=rand(0,5);
+  if(variant<3){const cards={A:net(b,'valid'),B:net(b,'few'),C:net(b,'extra'),D:net(b,'unequal')};return result('Quel patron peut former une pyramide régulière à base '+name+' ?', 'A',['B','C','D'],'Il faut une base, une face triangulaire par côté et des arêtes latérales de même longueur.','Le bon patron comporte toutes les faces compatibles, sans face supplémentaire.', '',cards)}
+  if(variant===3){const n=level===0?rand(3,5):rand(3,8);return numeric('Le polygone de base du patron a '+n+' côtés. Combien de triangles latéraux faut-il lui associer ?',n,[n-1,n+1,n*2],'Une face latérale par côté de la base.','Un polygone de '+n+' côtés nécessite '+n+' triangles latéraux.')}
+  if(variant===4){const n=level===0?rand(3,5):rand(3,8);return numeric('Un patron de pyramide possède '+n+' faces latérales triangulaires. Combien de faces possède-t-il en tout ?',n+1,[n,n+2,2*n],'Ajoute la face de base aux triangles latéraux.','Il y a '+n+' faces triangulaires et une base, soit '+(n+1)+' faces.')}
   return result('Pour construire une pyramide à base '+(b===4?'carrée':'triangulaire')+', quelles faces faut-il ?',b===4?'1 carré et 4 triangles':'4 triangles',b===4?['2 carrés et 3 triangles','1 carré et 3 triangles','5 triangles']:['1 carré et 3 triangles','3 triangles','2 triangles et 2 carrés'],'Compte la base puis une face latérale pour chaque côté.','Une pyramide à '+b+' côtés de base possède '+b+' faces latérales.',net(b,'valid'))
  }
  const shape=level===0?'square':pick(['square','rectangle','triangle','area']);
