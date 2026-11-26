@@ -1,0 +1,43 @@
+/* V28 — viewport and safe-area handling, including short landscape and portrait. */
+html{min-height:100%;overscroll-behavior-y:none}
+body.gamefullbody{overflow:hidden!important;overscroll-behavior:none}
+.play.gamefull{box-sizing:border-box!important;position:fixed!important;inset:0 auto auto 0!important;width:100%!important;height:100dvh!important;height:var(--game-height,100dvh)!important;max-height:none!important;padding:max(4px,env(safe-area-inset-top)) max(4px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(4px,env(safe-area-inset-left))!important;gap:3px;overflow:hidden!important}
+.play.gamefull:fullscreen,.play.gamefull:-webkit-full-screen{width:100%!important;height:100%!important}
+.play.gamefull .hud{flex:0 0 auto;min-width:0;max-width:100%;padding:4px!important;gap:4px}
+.play.gamefull .hud>div:first-child{min-width:0;flex:1 1 120px}.play.gamefull #sector{font-size:clamp(11px,2vw,15px);overflow-wrap:anywhere}
+.play.gamefull .hud .stats{min-width:0;max-width:100%;flex:0 1 auto;padding:3px 5px;gap:5px;font-size:12px}
+.play.gamefull .gameActions{flex:0 0 auto;gap:4px}.play.gamefull .gameActions button{min-height:40px;padding:4px 8px;white-space:nowrap;font-size:12px}
+.play.gamefull .screen{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);min-width:0;min-height:0;overflow:hidden;position:relative}
+.play.gamefull #canvas{grid-area:1/1;min-width:0;min-height:0;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;touch-action:none}
+.play.gamefull .instructions{flex:0 0 auto;min-height:0;line-height:1.2;padding:2px;max-height:3em;overflow:auto}
+.play.gamefull .screen .overlay{position:absolute!important;inset:0!important;display:flex;align-items:safe center;justify-content:center;overflow:auto;overscroll-behavior:contain;padding:6px;max-height:100%;touch-action:pan-y}
+.play.gamefull .screen .dialog{flex:0 1 760px;min-width:0;max-width:100%;max-height:100%;overflow:auto;overscroll-behavior:contain;touch-action:pan-y}
+.play.gamefull #equipPanel{max-height:min(350px,60dvh);overscroll-behavior:contain;touch-action:pan-y}
+.play.gamefull .screen .controls{touch-action:none;gap:8px}.play.gamefull .control{touch-action:none;min-height:48px;min-width:48px}
+@media(orientation:portrait){
+ .play.gamefull .hud{display:flex;flex-wrap:wrap;justify-content:space-between}
+ .play.gamefull .hud .stats{order:3;flex:1 1 100%;justify-content:space-between}
+ .play.gamefull .hud .playerlabel{font-size:11px}
+ .play.gamefull .screen{grid-template-rows:minmax(0,1fr) auto}
+ .play.gamefull .screen .controls{grid-area:2/1;position:relative;inset:auto;align-self:stretch;width:100%;padding:8px 4px!important;pointer-events:none;background:#132339}
+ .play.gamefull .screen .control{min-width:clamp(49px,13vw,90px);min-height:clamp(52px,13vw,80px)}
+ .play.gamefull .screen:has(.overlay:not([hidden])) .controls{visibility:hidden}
+ .play.gamefull #equipPanel{max-height:min(420px,55dvh)}
+ .play.gamefull #canvas{align-self:center}
+}
+@media(max-height:500px) and (orientation:landscape){
+ .play.gamefull .hud{flex-wrap:nowrap;gap:3px}
+ .play.gamefull .hud>div:first-child{flex:1 1 80px}
+ .play.gamefull .hud .stats{flex:0 1 auto;gap:4px;font-size:10px;padding:2px 3px}
+ .play.gamefull .hud .playerlabel{display:none}
+ .play.gamefull .gameActions button{min-height:36px;font-size:11px;padding:3px 6px}
+ .play.gamefull .screen .control{min-height:48px;min-width:52px;font-size:16px}
+ .play.gamefull .screen .controls{padding:4px 8px!important}
+ .play.gamefull .instructions{font-size:10px;max-height:2.6em}
+ .play.gamefull #equipPanel{max-height:calc(var(--game-height,100dvh) - 115px)}
+ .play.gamefull .screen .dialog{max-height:100%;padding:8px}
+}
+@media(max-width:740px) and (orientation:landscape){
+ .play.gamefull .hud{flex-wrap:wrap}.play.gamefull .hud .stats{order:3;flex:1 1 100%;justify-content:space-between}
+}
+@media(max-width:390px){.play.gamefull .gameActions button{font-size:11px;padding:4px 5px}.play.gamefull .hud .stats{font-size:10px}.play.gamefull .screen .control{min-width:46px;font-size:16px}}
