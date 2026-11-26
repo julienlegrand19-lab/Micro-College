@@ -1,6 +1,6 @@
 // Micro-Collège: API scolaire. No account passwords are stored in plaintext.
 const ORIGIN='https://julienlegrand19-lab.github.io';
-const CHAPTERS=['relatifs','pyramides'];
+const CHAPTERS=['relatifs','pyramides','litteral'];
 const enc=new TextEncoder();
 const now=()=>Math.floor(Date.now()/1000);
 const random=(n=24)=>Array.from(crypto.getRandomValues(new Uint8Array(n)),b=>b.toString(16).padStart(2,'0')).join('');
