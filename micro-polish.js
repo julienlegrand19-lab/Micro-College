@@ -113,14 +113,14 @@ function scenery(c,{chapter,world,cam=0,time=0,palette:p0}){
  const W=960,H=420;p.box(0,0,W,H,p.grad(0,0,0,H,p0.sky,p0.horizon));
  p.glow(770-cam*.045,78,130,trim);p.oval(770-cam*.045,78,43,43,trim+'bb');
  for(let i=0;i<(root.MicroPlayPrefs?.lite?12:40);i++){const x=((i*167-cam*.045)%990+990)%990,y=18+hash(i+5)*170;p.oval(x,y,1+hash(i)*1.2,1,trim+'65')}
- for(let i=-1;i<7;i++){const x=i*190-(cam*.16)%190,h=60+hash(i+20)*115;p.poly([[x-70,278],[x+40,278-h],[x+135,278]],p0.mount)}
- for(let i=-1;i<8;i+=(root.MicroPlayPrefs?.lite?2:1)){const x=i*155-(cam*.38)%155,y=265+hash(i+12)*26;
+ const far=cam*.16,near=cam*.38;for(let i=Math.floor(far/190)-1;i<=Math.ceil((far+960)/190)+1;i++){const x=i*190-far,h=60+hash(i+20)*115;p.poly([[x-70,278],[x+40,278-h],[x+135,278]],p0.mount)}
+ for(let i=Math.floor(near/155)-1;i<=Math.ceil((near+960)/155)+1;i++){const x=i*155-near,y=265+hash(i+12)*26;
   if(['forest','garden','oasis'].includes(type)){
-   p.line(x,y,x+5,y-92,dark,10);for(let j=0;j<6;j++){let a=j*Math.PI/3;p.oval(x+5+Math.cos(a)*28,y-81+Math.sin(a)*21,28,21,j%2?dark:p0.tree);p.oval(x+Math.cos(a)*27,y-88+Math.sin(a)*20,17,7,base+'45')}
+   p.line(x,y,x+5,y-92,dark,10);for(let j=0;j<6;j++){let a=j*Math.PI/3;p.oval(x+5+Math.cos(a)*28,y-81+Math.sin(a)*21,28,21,j%2?dark:p0.tree);if(!root.MicroPlayPrefs?.lite)p.oval(x+Math.cos(a)*27,y-88+Math.sin(a)*20,17,7,base+'45')}
   }else if(['mine','mirror'].includes(type)){
    for(let j=0;j<3;j++){const xx=x-35+j*35,ht=34+hash(i*3+j)*74;p.poly([[xx-14,y],[xx-18,y-ht*.63],[xx,y-ht],[xx+18,y-ht*.55],[xx+12,y]],p.grad(xx-18,y-ht,xx+18,y,base,dark));p.line(xx,y-ht,xx,y,trim+'80',1.2)}
   }else if(['factory','workshop'].includes(type)){
-   p.box(x-38,y-115,76,115,p.grad(x-38,y-115,x+38,y,base,dark));for(let j=0;j<4;j++)p.box(x-27,y-102+j*25,53,9,dark);p.oval(x+15,y-115,25,25,base,dark,2);for(let j=0;j<8;j++){const a=j*Math.PI/4+t/1800;p.line(x+15+Math.cos(a)*7,y-115+Math.sin(a)*7,x+15+Math.cos(a)*21,y-115+Math.sin(a)*21,dark,4)}p.oval(x+15,y-115,7,7,dark)
+   p.box(x-38,y-115,76,115,p.grad(x-38,y-115,x+38,y,base,dark));for(let j=0;j<4;j++)p.box(x-27,y-102+j*25,53,9,dark);p.oval(x+15,y-115,25,25,base,dark,2);for(let j=0;j<8;j+=(root.MicroPlayPrefs?.lite?2:1)){const a=j*Math.PI/4+t/1800;p.line(x+15+Math.cos(a)*7,y-115+Math.sin(a)*7,x+15+Math.cos(a)*21,y-115+Math.sin(a)*21,dark,4)}p.oval(x+15,y-115,7,7,dark)
   }else if(['obelisk','tomb','temple'].includes(type)){
    p.poly([[x-29,y],[x-21,y-128],[x,y-152],[x+21,y-128],[x+29,y]],p.grad(x-29,y-152,x+29,y,base,dark));p.line(x,y-152,x,y,trim+'60',1);for(let j=0;j<5;j++)p.gem(x-8,y-115+j*20,3,trim)
   }else if(['library','papyrus'].includes(type)){
