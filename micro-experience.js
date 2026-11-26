@@ -35,5 +35,22 @@ function icon(kind,item){
 }
 function decorate(el,kind,item,compact=false){const src=icon(kind,item);if(!src)return;const img=root.document.createElement('img');img.className=compact?'item-art compact':'item-art';img.src=src;img.alt='';img.setAttribute('aria-hidden','true');if(compact&&el.prepend)el.prepend(img);else el.append(img)}
 function enter(el){if(!el?.classList)return;el.classList.remove('screen-enter');if(el.id==='play')return;void el.offsetWidth;el.classList.add('screen-enter')}
-root.MicroExperience={icon,decorate,enter};
+const sounds={
+ rune:[[523,0,.15],[659,.07,.17],[784,.14,.23]],
+ retry:[[330,0,.13],[294,.10,.18]],
+ coin:[[880,0,.12],[1175,.055,.17]],
+ purify:[[392,0,.23],[523,.07,.24],[659,.14,.26],[1047,.21,.32]],
+ boss:[[262,0,.32],[392,.10,.28],[523,.2,.3],[784,.3,.38]],
+ shield:[[220,0,.19],[440,.035,.15],[660,.07,.2]],
+ hit:[[196,0,.12],[147,.06,.17]],
+ victory:[[523,0,.24],[659,.11,.24],[784,.22,.28],[1047,.34,.45],[523,.34,.45]]
+};
+function sound(ctx,ok=true,kind='rune'){
+ if(!ctx||root.document?.hidden)return false;
+ const notes=sounds[kind==='rune'&&!ok?'retry':kind]||sounds[ok?'rune':'retry'];
+ const now=ctx.currentTime;
+ for(const [hz,delay,duration] of notes){const t=now+delay,o=ctx.createOscillator(),g=ctx.createGain();o.type=kind==='hit'?'sine':'triangle';o.frequency.setValueAtTime(hz,t);if(kind==='hit')o.frequency.exponentialRampToValueAtTime(hz*.65,t+duration);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(kind==='hit'?.035:.042,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+duration);o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+duration+.01)}
+ return true;
+}
+root.MicroExperience={icon,decorate,enter,sound};
 })(globalThis);
