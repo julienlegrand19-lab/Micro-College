@@ -14,10 +14,13 @@ try{
  await page.goto(base);await page.locator('#hw').waitFor();
  assert.equal(await page.locator('.atlas-node').count(),6);
  assert.equal(await page.locator('[data-focus]').count(),6);
+ await click('villageOpen');await page.locator('[data-villager="bram"]').click();await page.locator('[data-choice="0"]').click();assert.equal(await page.locator('[data-forge="blade"]').isDisabled(),true);await click('villageBack');await click('villageJournal');assert.equal(await page.getByText('Maître de la crypte',{exact:true}).count(),1);await click('villageBack');await click('villageCrypt');await click('cryptStart');await page.locator('#crypt0').fill('0');await click('cryptCheck');await click('cryptNext');await page.locator('#crypt0').fill('0');await click('cryptCheck');await click('cryptNext');await page.locator('[data-move="spell"]').click();assert.equal(await page.locator('[data-move="spell"]').isDisabled(),true);await click('villageClose');await page.locator('#hw').waitFor();
  await page.locator('[data-focus="0"]').click();await page.locator('#focusCheck').waitFor();await click('studyClose');
  await click('mockOpen');await click('beginMock');assert.equal(await page.locator('[data-mock]').count(),24);await page.locator('#mockTime').waitFor();await page.locator('dialog[open]').evaluate(d=>d.close());
  await click('hw');await optional('prologueSkip');await page.locator('#student').fill('TEST-E01');await click('start');
  await page.locator('#walk').waitFor();assert.equal(await page.locator('#secret').count(),1);
+ await page.keyboard.down('ArrowRight');try{await page.waitForFunction(()=>Number(document.querySelector('#routeProgress')?.value)>10)}finally{await page.keyboard.up('ArrowRight')}
+ await page.locator('#jump').click();
  await click('direct');await page.locator('#app .question').waitFor();
  let attempt=await page.evaluate(()=>JSON.parse(localStorage.getItem('gardiens-dnb-v1')).hw);
  assert.equal(attempt.qs.length,24);
