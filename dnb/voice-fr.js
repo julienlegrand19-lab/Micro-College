@@ -1,0 +1,17 @@
+/* Astréon : voix fr-FR locales, choix partagé entre les territoires. */
+(function(root){
+'use strict';
+const key='astreon-voice-fr-v1';
+const natural=/natural|naturelle|premium|enhanced|améliorée|haute qualité|high quality|neural/i;
+function voices(){try{return (root.speechSynthesis?.getVoices()||[]).filter(v=>v.localService===true&&v.lang.replace('_','-').toLowerCase()==='fr-fr').sort((a,b)=>Number(natural.test(b.name))-Number(natural.test(a.name))||Number(b.default)-Number(a.default)||a.name.localeCompare(b.name,'fr'))}catch{return []}}
+function preferred(){try{return localStorage.getItem(key)||''}catch{return ''}}
+function chosen(){let list=voices();return list.find(v=>v.voiceURI===preferred())||list[0]||null}
+function stop(){try{root.speechSynthesis?.cancel()}catch{}}
+function math(s){return String(s).replace(/([A-Z]{2,3})(?=²|[ /=×+−,.]|$)/g,m=>m.split('').join(' ')).replace(/(\d+)\/(\d+)/g,'$1 sur $2').replace(/²/g,' au carré').replace(/³/g,' au cube').replace(/°/g,' degrés').replace(/√/g,' racine carrée de ').replace(/×/g,' fois ').replace(/÷/g,' divisé par ').replace(/∥/g,' parallèle à ').replace(/≠/g,' différent de ').replace(/≈/g,' environ égal à ').replace(/=/g,' égale ').replace(/\//g,' sur ').replace(/−/g,' moins ').replace(/\bcos\(/gi,'cosinus de ').replace(/\bsin\(/gi,'sinus de ').replace(/\btan\(/gi,'tangente de ').replace(/\barctan\(/gi,'arc tangente de ').replace(/\)/g,' ')}
+function speak(text,status){stop();let v=chosen();if(!v||typeof root.SpeechSynthesisUtterance!=='function'){if(status)status.textContent='Aucune voix locale Français (France) disponible. Le texte reste affiché.';return false}try{let u=new root.SpeechSynthesisUtterance(math(text));u.voice=v;u.lang='fr-FR';u.rate=.96;u.pitch=1;u.volume=1;if(status)status.textContent='Lecture : '+v.name;u.onend=()=>{if(status)status.textContent='Lecture terminée.'};u.onerror=()=>{if(status)status.textContent='Lecture interrompue ou indisponible.'};root.speechSynthesis.speak(u);return true}catch{if(status)status.textContent='Lecture indisponible.';return false}}
+function controls(host,status){if(!host)return;let box=document.createElement('div');box.className='fr-voice-settings';let label=document.createElement('label');label.textContent='Voix du mentor — Français (France)';let sel=document.createElement('select');sel.setAttribute('aria-label','Voix française du mentor');let test=document.createElement('button');test.type='button';test.className='secondary';test.textContent='Écouter un extrait';box.append(label,sel,test);host.append(box);
+ function refresh(){let list=voices(),v=chosen();sel.replaceChildren();if(!list.length){let o=document.createElement('option');o.textContent='Aucune voix fr-FR locale';sel.append(o)}else for(let voice of list){let o=document.createElement('option');o.value=voice.voiceURI;o.textContent=voice.name+(natural.test(voice.name)?' · qualité améliorée':'');o.selected=voice.voiceURI===v?.voiceURI;sel.append(o)}sel.disabled=!list.length;test.disabled=!list.length}
+ sel.onchange=()=>{stop();try{localStorage.setItem(key,sel.value)}catch{}if(status)status.textContent='Voix sélectionnée.'};test.onclick=()=>speak('Bonjour, jeune gardien. Dans un triangle rectangle, le carré de l’hypoténuse est égal à la somme des carrés des deux autres côtés. À toi de jouer !',status);refresh();try{root.speechSynthesis?.addEventListener('voiceschanged',()=>{if(box.isConnected)refresh()},{once:true})}catch{}
+}
+root.AstreonVoice=Object.freeze({voices,chosen,speak,stop,math,controls});
+})(globalThis);
