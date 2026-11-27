@@ -6,6 +6,7 @@ function path(c,d,fill,stroke=null,w=1){c.beginPath();for(let [op,...a] of d){if
 function ellipse(c,x,y,rx,ry,fill){c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fillStyle=fill;c.fill()}
 function gradient(c,x,y,X,Y,...v){let g=c.createLinearGradient(x,y,X,Y);v.forEach((s,i)=>g.addColorStop(i/(v.length-1),s));return g}
 function poly(c,p,f){path(c,[...p.map((v,i)=>[i?'L':'M',...v]),['Z']],f)}
+let backdrop=null;
 function scenery(c){
  c.fillStyle=gradient(c,0,0,0,540,'#94bfce','#f7eed2','#c9bc95');c.fillRect(0,0,960,540);
  ellipse(c,780,95,35,35,'#fff6cf');poly(c,[[0,280],[170,100],[290,234],[415,137],[600,290]],'#9baea9');poly(c,[[370,280],[580,135],[710,250],[865,145],[960,244],[960,350]],'#b2c0ab');
@@ -18,6 +19,13 @@ function scenery(c){
  for(let x of [25,245,715,935]){c.fillStyle=gradient(c,x-24,0,x+24,0,'#a89c83','#f7efd4','#c0b49a');c.fillRect(x-19,32,38,309);for(let j=-12;j<=12;j+=6){c.fillStyle='#c1b69d';c.fillRect(x+j,46,2,283)}c.fillStyle='#c4b598';c.fillRect(x-30,30,60,13);c.fillRect(x-26,330,52,16)}
  c.fillStyle=gradient(c,0,0,0,46,'#ab9b82','#e3d2b0');c.fillRect(0,0,960,29);c.fillStyle='#9e8d70';c.fillRect(0,29,960,8);
  poly(c,[[0,37],[960,37],[960,47],[0,47]],'#c9b99b');
+ // Carved meander frieze, sunlit stone grain and long architectural shadows.
+ for(let x=0;x<960;x+=32){path(c,[['M',x,15],['L',x+23,15],['L',x+23,6],['L',x+9,6],['L',x+9,11],['L',x+17,11]],null,'#8e795b',1.8)}
+ for(let x of [25,245,715,935]){poly(c,[[x-20,345],[x+24,345],[x+160,540],[x+100,540]],'#71684a23');for(let j=0;j<6;j++){let yy=53+j*46;path(c,[['M',x-18,yy],['L',x+18,yy+1]],null,'#80775d39',.8)}}
+ let seed=127;for(let i=0;i<3600;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;let x=seed%960;seed=(Math.imul(seed,1664525)+1013904223)>>>0;let y=342+seed%198;c.fillStyle=i%2?'#ffffff15':'#604b3514';c.fillRect(x,y,1+(i%3),1)}
+ // Pottery and olive branches in the courtyard.
+ for(let [x,y,s] of [[85,349,.8],[884,347,1]]){c.save();c.translate(x,y);c.scale(s,s);ellipse(c,0,0,26,6,'#665b4733');path(c,[['M',-12,-62],['L',12,-62],['L',11,-48],['Q',35,-20,18,-5],['Q',0,4,-18,-5],['Q',-35,-20,-11,-48],['Z']],gradient(c,-30,-40,30,-5,'#885133','#d99c67','#965f3a'),'#85583e');ellipse(c,0,-61,13,4,'#734f36');path(c,[['M',-16,-20],['Q',0,-14,16,-20]],null,'#e5c28c',2);c.restore()}
+
 }
 function pupil(c,o){
  let [skin,hair,robe]=colors[o.id%3],s=o.scale||1; c.save();c.translate(o.x,o.y);c.scale((o.face||1)*s,s);
@@ -27,12 +35,13 @@ function pupil(c,o){
  P([['M',-25,17],['L',28,58],['L',40,93],['L',9,94],['L',-43,42],['Z']],G(-38,17,38,94,robe,'#e1c7a2',robe));
  for(let j=0;j<3;j++)P([['M',-28+j*8,22],['Q',-5+j*5,54,24+j*4,90]],null,'#f3d9b677',1.5);
  P([['M',-18,9],['L',-16,-9],['L',16,-9],['L',18,10],['Q',0,23,-18,9],['Z']],skin,'#8e6248');
+ c.save();c.translate(0,3);c.rotate(o.pose?.tilt||0);c.translate(0,-3);
  ellipse(c,-27,-29,6,9,skin);ellipse(c,27,-29,6,9,skin);
  P([['M',-27,-43],['Q',-28,-71,0,-74],['Q',29,-70,28,-42],['L',24,-16],['Q',10,2,0,3],['Q',-18,-1,-25,-19],['Z']],G(-30,-60,30,-15,'#896349',skin,'#ab7756'),'#805b48');
  P([['M',-26,-25],['Q',-41,-66,-12,-77],['Q',10,-88,28,-64],['Q',34,-48,25,-35],['L',17,-59],['Q',0,-48,-15,-59],['L',-22,-34],['Z']],G(-28,-75,29,-36,hair,'#6e5842',hair));
  for(let j=0;j<6;j++)P([['M',-20+j*8,-66],['Q',-10+j*5,-79,-2+j*4,-64]],null,'#ab947055',1.6);
- for(let x of [-10,13]){P([['M',x-6,-37],['Q',x,-40,x+6,-37]],null,hair,1.7);ellipse(c,x+1,-32,5,2.4,'#fff1d5');ellipse(c,x+2,-32,2,2,'#303e3a')}
- P([['M',2,-38],['Q',1,-27,7,-24]],null,'#97664b',1.2);ellipse(c,5,-15,6,1.1+(o.mouth||0)*3,'#754638');
+ for(let x of [-10,13]){P([['M',x-6,-37],['Q',x,-40,x+6,-37]],null,hair,1.7);if((o.pose?.blink||0)>.5){path(c,[['M',x-4,-32],['L',x+5,-32]],null,'#6c4a38',1.2)}else{ellipse(c,x+1,-32,5,2.4,'#fff1d5');ellipse(c,x+2+(o.pose?.gaze||0),-32,2,2,'#303e3a')}}
+ P([['M',2,-38],['Q',1,-27,7,-24]],null,'#97664b',1.2);ellipse(c,5,-15,6,1.1+(o.mouth||0)*3,'#754638');c.restore();
  P([['M',-36,46],['Q',-24,44,-20,53],['L',8,69],['Q',16,75,7,80],['L',-32,68],['Z']],skin,'#926d51');
  P([['M',34,48],['L',40,66],['L',15,79],['Q',4,76,10,69],['Z']],skin,'#926d51');
  // wax tablet at rest
@@ -40,30 +49,43 @@ function pupil(c,o){
  c.restore()
 }
 function table(c,x,y,w){poly(c,[[x,y],[x+w,y],[x+w-15,y+22],[x+10,y+22]],'#c09c69');c.fillStyle='#8b6b48';c.fillRect(x+17,y+22,16,75);c.fillRect(x+w-37,y+22,16,75);c.fillStyle='#d8b888';c.fillRect(x,y, w,5)}
+function motion(t,id,talking,allow=true,gesture=true){
+ if(!allow)return {tilt:0,gaze:0,nod:0,blink:0,gesture:0};
+ let sec=t/1000,phase=sec+id*1.73,cycle=(phase%5.8+5.8)%5.8;
+ let pulse=Math.max(0,Math.sin(Math.PI*Math.min(1,Math.max(0,(cycle-1.25)/1.8))));
+ let blink=phase%4.7<.14?1:0;
+ return {tilt:Math.sin(phase*.82)*.032+(talking?.025*Math.sin(sec*1.6):0),gaze:Math.sin(phase*.43)*1.5,nod:talking?Math.sin(sec*1.4)*1.4:0,blink,gesture:talking&&gesture?pulse*.88:0}
+}
 function draw(c,o){
- scenery(c);
- let shot=o.shot,voice=o.speaker,open=o.mouth;
+ if(!backdrop&&typeof document!=='undefined'){backdrop=document.createElement('canvas');backdrop.width=960;backdrop.height=540;scenery(backdrop.getContext('2d'))}
+ let shot=o.shot,voice=o.speaker,open=o.mouth,t=o.time||0,active=o.animate!==false;
+ c.save();
+ // Very slow camera approach on full-width shots. The geometry overlay remains fixed.
+ let zoom=active&&shot!=='lesson'?1.025+.015*Math.sin(t/8500):1;
+ c.translate(480,270);c.scale(zoom,zoom);c.translate(-480,-270);
+ if(backdrop)c.drawImage(backdrop,0,0);else scenery(c);
+ const pose=(name,id,gest=true)=>motion(t,id,voice===name&&o.playing,active,gest);
  if(shot==='wide'){
-  root.AstreonSage.draw(c,{x:477,y:253,scale:1.55,mouth:voice==='Pythagore'?open:0});
-  pupil(c,{id:0,x:150,y:352,scale:1.43,face:1,mouth:voice==='Nikos'?open:0});
-  pupil(c,{id:1,x:768,y:343,scale:1.42,face:-1,mouth:voice==='Daphné'?open:0});
-  pupil(c,{id:2,x:307,y:400,scale:1.23,face:1,mouth:voice==='Léon'?open:0});
+  root.AstreonSage.draw(c,{x:477+(active?Math.sin(t/3500)*7:0),y:253,scale:1.55,mouth:voice==='Pythagore'?open:0,pose:pose('Pythagore',0)});
+  pupil(c,{id:0,x:150,y:352,scale:1.43,face:1,mouth:voice==='Nikos'?open:0,pose:pose('Nikos',1,false)});
+  pupil(c,{id:1,x:768,y:343,scale:1.42,face:-1,mouth:voice==='Daphné'?open:0,pose:pose('Daphné',2,false)});
+  pupil(c,{id:2,x:307,y:400,scale:1.23,face:1,mouth:voice==='Léon'?open:0,pose:pose('Léon',3,false)});
   table(c,370,415,230);
   poly(c,[[420,405],[520,405],[520,415],[420,415]],'#e4cfaa');
   path(c,[['M',445,410],['L',445,380],['L',496,410],['Z']],null,'#8f6340',3);
  }else if(shot==='student'){
-  root.AstreonSage.draw(c,{x:795,y:245,scale:1.24,mouth:0});
+  root.AstreonSage.draw(c,{x:795,y:245,scale:1.24,mouth:0,pose:pose('Pythagore',0,false)});
   let id=voice==='Nikos'?0:voice==='Daphné'?1:2;
-  pupil(c,{id,x:445,y:300,scale:2.55,face:1,mouth:open});
-  pupil(c,{id:(id+1)%3,x:150,y:348,scale:1.2,face:1,mouth:0});
+  pupil(c,{id,x:445,y:300,scale:2.55,face:1,mouth:open,pose:pose(voice,id+1,false)});
+  pupil(c,{id:(id+1)%3,x:150,y:348,scale:1.2,face:1,mouth:0,pose:motion(t,id+2,false,active)});
   table(c,260,478,375);
  }else{
-  pupil(c,{id:0,x:60,y:412,scale:.92,face:1,mouth:0});
-  root.AstreonSage.draw(c,{x:195,y:270,scale:1.82,mouth:voice==='Pythagore'?open:0});
+  pupil(c,{id:0,x:60,y:412,scale:.92,face:1,mouth:0,pose:pose('Nikos',1,false)});
+  root.AstreonSage.draw(c,{x:180,y:270,scale:1.70,mouth:voice==='Pythagore'?open:0,pose:pose('Pythagore',0,o.kind!=='squares')});
   table(c,22,472,325);
  }
  // soft vignette, not a dark scene
- let g=c.createRadialGradient(480,270,240,480,270,565);g.addColorStop(0,'#fff4d000');g.addColorStop(1,'#69573822');c.fillStyle=g;c.fillRect(0,0,960,540)
+ let g=c.createRadialGradient(480,270,240,480,270,565);g.addColorStop(0,'#fff4d000');g.addColorStop(1,'#69573822');c.fillStyle=g;c.fillRect(0,0,960,540);c.restore()
 }
-root.AstreonClassroom=Object.freeze({draw});
+root.AstreonClassroom=Object.freeze({draw,motion});
 })(globalThis);
