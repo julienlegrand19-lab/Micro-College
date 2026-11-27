@@ -26,13 +26,19 @@ try{
  assert.equal(await page.locator('[data-mentor]').count(),6);
  assert.equal(await page.locator('.scratch-territory').count(),1);
  await page.locator('.scratch-link').click();await page.locator('#learn').waitFor();
- await click('learn');assert.equal(await page.locator('[data-lesson]').count(),6);await click('home');assert.equal(await page.locator('[data-room]').count(),12);
+ await click('learn');assert.equal(await page.locator('[data-lesson]').count(),6);await click('home');assert.equal(await page.locator('[data-room]').count(),16);
+ await page.locator('[data-route="2"]').click();assert.equal(await page.locator('[data-room]').count(),6);
+ await page.locator('[data-room="12"]').click();await page.locator('#response').fill('26');await click('check');assert((await page.locator('#feedback').textContent()).includes('réussi'));await click('home');await page.locator('[data-route="-1"]').click();
  await page.locator('[data-room="1"]').click();await click('run');assert((await page.locator('#feedback').textContent()).includes('Complète'));
  await page.locator('[data-hole="r"]').selectOption('4');await click('run');assert((await page.locator('#trace').textContent()).includes('avancer 55'));await click('check');assert((await page.locator('#feedback').textContent()).includes('réussi'));
  await click('home');assert((await page.locator('[data-room="1"]').textContent()).includes('✓'));
  await page.reload();assert((await page.locator('[data-room="1"]').textContent()).includes('✓'));
  await page.locator('[data-room="3"]').click();await page.locator('#response').fill('17');await click('check');assert((await page.locator('#feedback').textContent()).includes('réussi'));
  await page.goto(base);await page.locator('#hw').waitFor();
+ assert.equal(await page.locator('[data-path-world]').count(),6);
+ await page.locator('[data-path-world="1"]').click();assert.equal(await page.locator('[data-path]').count(),3);
+ await page.locator('[data-path="0"]').click();assert.equal(await page.locator('.guided-step').count(),4);await click('pathHint');assert((await page.locator('#pathFeedback').textContent()).length>15);await click('pathMenu');
+ await page.locator('[data-path="2"]').click();assert((await page.locator('.paths-dialog').textContent()).includes('Le câble du rempart'));await page.locator('#path0').fill('0');await page.locator('#path1').fill('0');await page.locator('#path2').fill('0');await click('pathCheck');assert(await page.locator('#pathNext').isEnabled());await click('pathNext');assert((await page.locator('.paths-dialog').textContent()).includes('Le passage du colosse'));await click('pathMenu');await click('pathClose');
  await page.locator('[data-mentor="3"]').click();await page.locator('[data-mentor-tab="example"]').click();await page.locator('[data-geometry="BC"]').click();assert((await page.locator('.geometry-feedback').textContent()).includes('hypoténuse'));await click('mentorContinue');
 
  await page.locator('[data-mentor="1"]').click();await page.getByRole('dialog',{name:'Rencontre avec le maître'}).waitFor();
