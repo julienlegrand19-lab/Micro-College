@@ -25,6 +25,15 @@ try{
  await page.evaluate(()=>{let k='astreon-clairval-v1',s=JSON.parse(localStorage.getItem(k));s.done=['potion','ladder','bridge'];localStorage.setItem(k,JSON.stringify(s))});await page.reload();assert(!(await place('keeper').isDisabled()));
  await visit('keeper');assert.equal((await state()).letter,'done');await click('closeDialog');
  assert((await page.locator('#lifeJournal').textContent()).includes('3/3 services rendus'));
- await page.reload();assert((await page.locator('#lifeJournal').textContent()).includes('3/3 services rendus'));assert.deepEqual(errors,[]);
+ await page.reload();assert((await page.locator('#lifeJournal').textContent()).includes('3/3 services rendus'));
+ await click('invJournal');await page.locator('dialog[open]').waitFor();
+ const k=1+seed%5;
+ await page.locator('[data-inv="'+(k+3)+'"]').click();await click('invCheck');assert(await page.locator('#invNext').isHidden());
+ await page.locator('[data-inv="'+(k+8)+'"]').click();await click('invCheck');await click('invNext');
+ await click('closeDialog');await page.reload();await click('invJournal');assert((await page.locator('dialog h2').textContent()).includes('clés'));
+ await page.locator('[data-inv="1/3"]').click();await click('invCheck');await click('invNext');
+ await page.locator('#invSlider').fill(String(3+k));await click('invCheck');await click('invNext');assert((await page.locator('dialog h2').textContent()).includes('résolu'));
+ await click('closeDialog');await page.reload();assert((await page.locator('#invJournal').textContent()).includes('Enquête résolue'));assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('astreon-clairval-investigation-v1'))),3);
+ assert.deepEqual(errors,[]);
  console.log('PASS: 100 markets, optional village quests, bridge constraint, mobile, weather, persistence');
 }finally{await browser.close()}
