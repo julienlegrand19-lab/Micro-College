@@ -29,3 +29,4 @@ jobs:
       - run: node dnb/tests/workshops.mjs
       - run: node dnb/tests/studio.mjs
       - run: node dnb/tests/encounters.mjs
+      - run: node dnb/tests/clairval.mjs
