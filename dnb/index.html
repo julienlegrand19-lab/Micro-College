@@ -39,8 +39,32 @@ main{max-width:980px;padding:12px}header{padding:8px 0;border:0}header h1{font-s
 
 /* 1.4 — cinematic events */
 .event-banner{position:absolute;top:17%;left:5%;right:5%;text-align:center;pointer-events:none;z-index:2;padding:8px;background:linear-gradient(90deg,transparent,#101925ee,transparent);color:#ffe0a7;font:700 16px Georgia,serif;text-shadow:0 2px 6px #000}.event-banner:empty{display:none}.event-banner small{display:block;color:#f0d7b4;font:12px system-ui}.event-tools #companion{background:#473559;color:#f5dcff;border-color:#a488c4}.event-tools #companion:disabled{opacity:.5}.credits-card{border:1px solid #bba072;background:linear-gradient(120deg,#1c303c,#302640);border-radius:13px;padding:14px;margin:12px 0}.credits-card h3{color:#f3d09a;font:700 24px Georgia,serif;margin:4px 0}.credits-card p{font-size:14px}.credits-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.credits-grid div{background:#111c2c99;border-radius:8px;padding:8px;font-size:12px}.credits-grid strong{display:block;font-size:20px;color:#ffe1a0}.final-act{font:700 12px system-ui;letter-spacing:.1em;color:#e8c897;margin:8px 0}.credits-card .muted{font-size:12px}@media(max-width:550px){.event-banner{font-size:13px}.event-banner small{font-size:10px}.event-tools button{flex:1 1 43%}}
-</style></head><body><main><header><div class="tag">Collège • Mathématiques • 3e</div><h1>Les Gardiens du Savoir</h1><p>DNB 2027 — Six territoires à reconquérir</p><button class="secondary" id="access">Lecture aérée</button></header><div id="app"></div><footer>Version 1.4 RC • Entraînement et devoir pilote • Sans compte ni envoi automatique de données.</footer></main>
-<script src="../school-config.js"></script><script src="../micro-heroes.js"></script><script src="../micro-bestiary.js"></script><script>
+
+/* Astréon 1.5 — visual identity */
+:root{--gold:#e4c28a;--panel:#17222e;--line:#48566a}
+body{background:radial-gradient(ellipse at 50% 0,#344353 0,#101825 48%,#080e17 100%);background-attachment:fixed}
+header h1{letter-spacing:.025em;color:#f1d29e;text-shadow:0 2px 6px #000}
+header .tag{letter-spacing:.18em;color:#ccbd9d}header p{color:#c3ced7}
+.panel{border-color:#596477;background:linear-gradient(145deg,#222e3d,#111a27 78%);box-shadow:0 10px 24px #0005,inset 0 1px #ffffff0b}
+.launch-hero{border:1px solid #c1a477;box-shadow:0 10px 35px #0009,inset 0 0 50px #0009}
+.launch-title{padding-bottom:17px}.launch-title strong{letter-spacing:.16em;color:#f8dfaf;text-shadow:0 2px 0 #533f30,0 6px 12px #000,0 0 22px #dca35a66}
+.launch-title span{letter-spacing:.07em;color:#d9cdb6}
+.tile{border:1px solid #827253;border-radius:12px;background:linear-gradient(135deg,#253443,#101a27)}
+.tile h3{color:#efd0a0}.tile canvas{filter:none}
+button:not(.secondary):not(.atlas-node):not(.village-place){background:linear-gradient(155deg,#f3d9a1,#cc9f5d);color:#182330;border-color:#e2c38c;box-shadow:inset 0 1px #fff3,0 2px 3px #0004}
+button.secondary{background:linear-gradient(145deg,#293b50,#1a2939);border-color:#657589}
+button:active{filter:brightness(.91)}button:focus-visible{outline-offset:2px}
+.explore-shell{border-color:#a98d65;box-shadow:0 5px 16px #0007}.explore-hud{background:linear-gradient(90deg,#1d2b37,#2a2939);border-bottom:1px solid #77664e;color:#edcf9f}
+.arena,.final-screen,.cinema-frame{border-color:#bca16c;box-shadow:0 6px 20px #0008}
+.arena-head{padding:3px 4px}.meter{height:8px;box-shadow:0 1px 3px #0005}.meter i{box-shadow:0 0 6px #c5f8bc55}
+.boss-plate,.route-ribbon,.action-hud{background:linear-gradient(90deg,#152230,#202638)}
+.action-hud progress{height:8px}.actionbar,.event-tools{background:#121c28}
+.hero-pick,.companion-card,.pack-item{border-color:#7e7867;background:linear-gradient(150deg,#2b3a49,#15202d)}
+.pack-item strong{color:#f6d5a2}.story-banner{border-color:#907c58}.story-banner strong{letter-spacing:.1em;color:#e3c28c}
+.question{color:#f6f1e7}.qnav .current{outline-color:#f6d6a0}
+@media(max-width:550px){.launch-title strong{letter-spacing:.12em}.panel{padding:11px}}
+</style></head><body><main><header><div class="tag">Collège • Mathématiques • 3e</div><h1>Astréon — Les Gardiens du Savoir</h1><p>Le réveil de Vesper · DNB 2027</p><button class="secondary" id="access">Lecture aérée</button></header><div id="app"></div><footer>Version 1.5 RC • Entraînement et devoir pilote • Sans compte ni envoi automatique de données.</footer></main>
+<script src="../school-config.js"></script><script src="../micro-heroes.js"></script><script src="../micro-bestiary.js"></script><script src="astreon-art.js?v=15"></script><script>
 'use strict';
 const $=id=>document.getElementById(id), app=$('app'), key='gardiens-dnb-v1';
 const worlds=[['⚔️','Le royaume fragmenté','Fractions',4],['⛰️','Les montagnes de Pythagore','Pythagore',3],['🏛️','Les ruines de Thalès','Thalès',3],['🔭','L’observatoire des angles','Trigonométrie',4],['⚒️','Les forges de l’algèbre','Double distributivité',3],['🔮','La citadelle des identités','Identités remarquables',3]];
@@ -202,6 +226,8 @@ const themes=[
  ['L’Automate de Fer','Les forges oubliées','#321c24','#855045','#ffad55','litteral',1],
  ['L’Archonte du Miroir','La citadelle de cristal','#251b46','#645789','#e5b7ff','litteral',4]
 ];
+const DnbHeroes={draw:(c,o)=>globalThis.AstreonArt?AstreonArt.hero(c,o):globalThis.MicroHeroes?.draw(c,o)};
+const DnbBestiary={draw:(c,o)=>globalThis.AstreonArt?AstreonArt.boss(c,{...o,territory:Math.max(0,themes.findIndex(t=>t[5]===o.chapter&&t[6]===o.world))}):globalThis.MicroBestiary?.draw(c,o)};
 const heroes=[['knight','Chevalier'],['mage','Mage'],['ranger','Rôdeur'],['scout','Éclaireur']];
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let animation=0,previous='',hero=heroes.some(x=>x[0]===store.hero)?store.hero:'knight';
@@ -232,13 +258,13 @@ function scene(ctx,w,t,characters=false,state={}){
   let hx=180+(ok?z*88:0),bx=650-(bad?z*42:0);
   glow(hx,220,85,'#91d5ff');glow(bx,183,100,light);
   ctx.fillStyle='#0007';ctx.beginPath();ctx.ellipse(hx,268,62,12,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(bx,268,90,16,0,0,Math.PI*2);ctx.fill();
-  if(globalThis.MicroHeroes)MicroHeroes.draw(ctx,{character:hero,x:hx,y:263,scale:2.65,time:t,pose:hit?(ok?'cast':bad?'hurt':'idle'):'idle',magic:light});
+  if(globalThis.AstreonArt||globalThis.MicroHeroes)DnbHeroes.draw(ctx,{character:hero,x:hx,y:263,scale:2.65,time:t,pose:hit?(ok?'cast':bad?'hurt':'idle'):'idle',magic:light});
   else{p([[hx-36,263],[hx-24,165],[hx+24,165],[hx+37,263]],'#a4b8cc');circle(hx,145,22,'#d7c6a9')}
-  if(globalThis.MicroBestiary)MicroBestiary.draw(ctx,{chapter,world:boss,x:bx,y:260,scale:2.45,time:t,dir:-1,boss:true,flash:ok&&hit?z:0,attack:bad&&hit,purity:0});
+  if(globalThis.AstreonArt||globalThis.MicroBestiary)DnbBestiary.draw(ctx,{chapter,world:boss,x:bx,y:260,scale:2.45,time:t,dir:-1,boss:true,flash:ok&&hit?z:0,attack:bad&&hit,purity:0});
   else{p([[bx-50,260],[bx-36,145],[bx+36,145],[bx+50,260]],far,light,3);circle(bx-14,160,5,light);circle(bx+14,160,5,light)}
   if(hit){let f=Math.min(1,dt/600),x=ok?hx+(bx-hx)*f:bad?bx+(hx-bx)*f:420,y=ok||bad?171-Math.sin(f*Math.PI)*45:205-50*f;glow(x,y,70,light);circle(x,y,12+z*9,'#fff5d5');for(let i=0;i<15;i++){let a=i*2.399,rr=20+f*62;line(x,y,x+Math.cos(a)*rr,y+Math.sin(a)*rr,light+'aa',2)}}
  }
- let vign=ctx.createRadialGradient(420,140,130,420,150,465);vign.addColorStop(0,'#00000000');vign.addColorStop(1,'#05081091');rect(0,0,W,H,vign);ctx.restore();
+ atmosphere(ctx,w,t,W,H,characters?180:null,characters?650:null,263);let vign=ctx.createRadialGradient(420,140,130,420,150,465);vign.addColorStop(0,'#00000000');vign.addColorStop(1,'#05081091');rect(0,0,W,H,vign);ctx.restore();
 }
 function drawCanvas(canvas,w,t,chars,state){try{let c=canvas.getContext('2d');if(c)scene(c,w,t,chars,state)}catch(e){if(!canvas.dataset.failed){canvas.dataset.failed='1';console.warn('Scène DNB',e)}}}
 const oldHome=home,oldRender=render,oldResults=results,oldConfirm=confirmFinish;
@@ -306,14 +332,14 @@ function journey(){
  function diamond(px,py,size,fill){ctx.beginPath();ctx.moveTo(px,py-size);ctx.lineTo(px+size*.7,py);ctx.lineTo(px,py+size);ctx.lineTo(px-size*.7,py);ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle='#fff1cd';ctx.stroke()}
  for(let i=0;i<28;i++){let px=(i*89+t*.018)%840,py=(i*51+Math.sin(t/500+i)*12)%325;ctx.fillStyle=light+'77';ctx.beginPath();ctx.arc(px,py,1.3,0,Math.PI*2);ctx.fill()}
  for(let s of shards){if(s.taken)continue;let px=s.x-camera,py=floor-(s.high?110:44)+Math.sin(t/300+s.x)*7;ctx.save();ctx.shadowColor=light;ctx.shadowBlur=18;diamond(px,py,13,light);ctx.restore()}
- if(t<flashUntil){ctx.fillStyle=light+'18';ctx.fillRect(0,0,840,420)}weather(ctx,w,t,floor);renderTerrain(ctx,w,camera,floor,platform,hazard,t,!!secrets[id]);if(Q.i===0&&globalThis.MicroHeroes){let npc=saga[w].npc.split(',')[0];MicroHeroes.draw(ctx,{...(actors[npc]||actors.Lyra),x:npcX-camera,y:floor,scale:2.1,time:t,face:1,pose:'idle'});ctx.font='bold 13px system-ui';ctx.textAlign='center';ctx.fillStyle='#ffe1a0';ctx.fillText(npc,npcX-camera,floor-175)}let cx=chestX-camera;ctx.save();ctx.fillStyle=chestOpen?'#403329':'#79512c';ctx.strokeStyle='#e6bb76';ctx.lineWidth=2;ctx.fillRect(cx-21,floor-24,42,24);ctx.strokeRect(cx-21,floor-24,42,24);ctx.fillStyle='#c69c58';ctx.fillRect(cx-3,floor-16,6,9);if(chestOpen){ctx.strokeStyle='#c69c58';ctx.beginPath();ctx.moveTo(cx-21,floor-24);ctx.lineTo(cx-19,floor-47);ctx.lineTo(cx+20,floor-46);ctx.stroke()}ctx.restore();let ex=foePos-camera,gx=gateX-camera;ctx.save();ctx.shadowColor=light;ctx.shadowBlur=20;ctx.strokeStyle=light;ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(gx,floor-95,42,92,0,0,Math.PI*2);ctx.stroke();ctx.restore();
- if(!A.cleared){if(A.warning){ctx.save();ctx.strokeStyle='#ffae70';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(ex,floor,bossTactic(w,Q.i,A).range+Math.sin(t/80)*5,12,0,0,Math.PI*2);ctx.stroke();ctx.restore()}if(globalThis.MicroBestiary)MicroBestiary.draw(ctx,{chapter:theme[5],world:theme[6],x:ex,y:floor,scale:Q.i===3?(w===5?4.7:4.15):2.6,time:t,dir:x<foePos?-1:1,boss:true,flash:t<A.foeHit?1:0,attack:A.warning,exposed:!A.warning,purity:1-A.foe/A.max});else{ctx.fillStyle=light;ctx.fillRect(ex-25,floor-90,50,90)}}
- if(globalThis.MicroHeroes)MicroHeroes.draw(ctx,{character:hero,x:x-camera,y:floor-y,scale:2.65,time:t,face,pose:t<A.hitUntil?'hurt':t<A.attackUntil?'cast':y>0?'jump':Math.abs(vx)>1?'run':'idle',magic:pack.equip.spell==='storm'?'#e1aaff':light,armor:gearVisual()});else{ctx.fillStyle='#ded9cc';ctx.fillRect(x-camera-12,floor-y-65,24,65)}
+ if(t<flashUntil){ctx.fillStyle=light+'18';ctx.fillRect(0,0,840,420)}weather(ctx,w,t,floor);renderTerrain(ctx,w,camera,floor,platform,hazard,t,!!secrets[id]);if(Q.i===0&&(globalThis.AstreonArt||globalThis.MicroHeroes)){let npc=saga[w].npc.split(',')[0];DnbHeroes.draw(ctx,{...(actors[npc]||actors.Lyra),x:npcX-camera,y:floor,scale:2.1,time:t,face:1,pose:'idle'});ctx.font='bold 13px system-ui';ctx.textAlign='center';ctx.fillStyle='#ffe1a0';ctx.fillText(npc,npcX-camera,floor-175)}let cx=chestX-camera;ctx.save();ctx.fillStyle=chestOpen?'#403329':'#79512c';ctx.strokeStyle='#e6bb76';ctx.lineWidth=2;ctx.fillRect(cx-21,floor-24,42,24);ctx.strokeRect(cx-21,floor-24,42,24);ctx.fillStyle='#c69c58';ctx.fillRect(cx-3,floor-16,6,9);if(chestOpen){ctx.strokeStyle='#c69c58';ctx.beginPath();ctx.moveTo(cx-21,floor-24);ctx.lineTo(cx-19,floor-47);ctx.lineTo(cx+20,floor-46);ctx.stroke()}ctx.restore();let ex=foePos-camera,gx=gateX-camera;ctx.save();ctx.shadowColor=light;ctx.shadowBlur=20;ctx.strokeStyle=light;ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(gx,floor-95,42,92,0,0,Math.PI*2);ctx.stroke();ctx.restore();
+ if(!A.cleared){if(A.warning){ctx.save();ctx.strokeStyle='#ffae70';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(ex,floor,bossTactic(w,Q.i,A).range+Math.sin(t/80)*5,12,0,0,Math.PI*2);ctx.stroke();ctx.restore()}if(globalThis.AstreonArt||globalThis.MicroBestiary)DnbBestiary.draw(ctx,{chapter:theme[5],world:theme[6],x:ex,y:floor,scale:Q.i===3?(w===5?4.7:4.15):2.6,time:t,dir:x<foePos?-1:1,boss:true,flash:t<A.foeHit?1:0,attack:A.warning,exposed:!A.warning,purity:1-A.foe/A.max});else{ctx.fillStyle=light;ctx.fillRect(ex-25,floor-90,50,90)}}
+ if(globalThis.AstreonArt||globalThis.MicroHeroes)DnbHeroes.draw(ctx,{character:hero,x:x-camera,y:floor-y,scale:2.65,time:t,face,pose:t<A.hitUntil?'hurt':t<A.attackUntil?'cast':y>0?'jump':Math.abs(vx)>1?'run':'idle',magic:pack.equip.spell==='storm'?'#e1aaff':light,armor:gearVisual()});else{ctx.fillStyle='#ded9cc';ctx.fillRect(x-camera-12,floor-y-65,24,65)}
  if(pet)petDraw(ctx,pet.id,x-camera-face*67,floor-y-(pet.id==='fox'?12:65+Math.sin(t/320)*6),1.25,t,face);if(t<A.attackUntil&&!reduced){let hx=x-camera,hy=floor-y-80,delta=Math.max(0,Math.min(1,(t-A.effectStart)/360));ctx.save();ctx.strokeStyle=light;ctx.shadowColor=light;ctx.shadowBlur=18;
  if(A.effectKind==='spell'){let px=hx+(ex-hx)*delta,py=hy-Math.sin(delta*Math.PI)*42;let gr=ctx.createRadialGradient(px,py,0,px,py,36);gr.addColorStop(0,'#fff8dd');gr.addColorStop(.3,light);gr.addColorStop(1,light+'00');ctx.fillStyle=gr;ctx.beginPath();ctx.arc(px,py,36,0,Math.PI*2);ctx.fill();ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(hx,hy);ctx.lineTo(px,py);ctx.stroke()}
  else{for(let i=0;i<4;i++){ctx.globalAlpha=(1-i*.2)*(1-delta*.55);ctx.lineWidth=5-i;ctx.beginPath();ctx.arc(hx,hy,64+i*9,face===1?-1.4+delta*.7:1.7+delta*.7,face===1?1.15+delta*.7:4.25+delta*.7);ctx.stroke()}}
  ctx.restore()}if(t<A.dodgeUntil){ctx.save();ctx.strokeStyle='#c9e5ff';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x-camera,floor-y-67,44,72,0,0,Math.PI*2);ctx.stroke();ctx.restore()}if(near&&!A.cleared){ctx.font='bold 15px system-ui';ctx.textAlign='center';ctx.fillStyle='#fff1ce';ctx.fillText('✦ '+theme[0],Math.max(145,Math.min(695,ex)),48)}
- setPieceArt(ctx,E,w,t,camera,floor,x,ex);bossFX(ctx,w,A,t,ex,floor,Q.i);depthLayer(ctx,w,camera,t,floor,true);exploreFrame=requestAnimationFrame(draw);
+ setPieceArt(ctx,E,w,t,camera,floor,x,ex);bossFX(ctx,w,A,t,ex,floor,Q.i);depthLayer(ctx,w,camera,t,floor,true);atmosphere(ctx,w,t,840,420,x-camera,foePos-camera,floor);exploreFrame=requestAnimationFrame(draw);
  }
  if(ctx)exploreFrame=requestAnimationFrame(draw);else $('walktip').textContent='Utilise l’accès direct à l’épreuve.';
 }
@@ -336,7 +362,7 @@ render=function(){
  journey()
 };
 
-home=function(){stopExplore();activeEncounter='';stagedHome();let panel=app.querySelector('.panel');if(!panel)return;let cover=document.createElement('div');cover.className='cinematic';cover.innerHTML='<canvas width="840" height="320" aria-hidden="true"></canvas><div>Les six sceaux du royaume</div>';panel.prepend(cover);drawCanvas(cover.querySelector('canvas'),5,0,true,{});let intro=panel.querySelector('h2');if(intro)intro.textContent='La lumière du royaume s’éteint';let heroButtons=panel.querySelectorAll('[data-hero]');heroButtons.forEach(b=>{let label=b.textContent,c=document.createElement('canvas');c.width=120;c.height=130;b.className='hero-card'+(b.dataset.hero===hero?' selected':'');b.innerHTML='<span>'+esc(label)+'</span>';b.prepend(c);let g=c.getContext('2d');if(g&&globalThis.MicroHeroes){g.fillStyle='#1b2a3b';g.fillRect(0,0,120,130);MicroHeroes.draw(g,{character:b.dataset.hero,x:60,y:120,scale:1.55,time:0,pose:'idle'})}})};
+home=function(){stopExplore();activeEncounter='';stagedHome();let panel=app.querySelector('.panel');if(!panel)return;let cover=document.createElement('div');cover.className='cinematic';cover.innerHTML='<canvas width="840" height="320" aria-hidden="true"></canvas><div>Les six sceaux du royaume</div>';panel.prepend(cover);drawCanvas(cover.querySelector('canvas'),5,0,true,{});let intro=panel.querySelector('h2');if(intro)intro.textContent='La lumière du royaume s’éteint';let heroButtons=panel.querySelectorAll('[data-hero]');heroButtons.forEach(b=>{let label=b.textContent,c=document.createElement('canvas');c.width=120;c.height=130;b.className='hero-card'+(b.dataset.hero===hero?' selected':'');b.innerHTML='<span>'+esc(label)+'</span>';b.prepend(c);let g=c.getContext('2d');if(g&&globalThis.MicroHeroes){g.fillStyle='#1b2a3b';g.fillRect(0,0,120,130);DnbHeroes.draw(g,{character:b.dataset.hero,x:60,y:120,scale:1.55,time:0,pose:'idle'})}})};
 
 const adventureHome=home;
 function prologue(launch){
@@ -390,7 +416,7 @@ function musicTick(){if(!musicContext||musicContext.state!=='running'||document.
 async function musicStart(){if(!store.sound||document.hidden||musicTimer)return;try{const A=globalThis.AudioContext||globalThis.webkitAudioContext;if(!A)return;if(!musicContext){musicContext=new A();musicMaster=musicContext.createGain();musicMaster.gain.value=0;musicMaster.connect(musicContext.destination)}await musicContext.resume();if(!store.sound||document.hidden||musicTimer)return;musicMaster.gain.setTargetAtTime(.75,musicContext.currentTime,.07);musicNext=musicContext.currentTime+.05;musicTimer=setInterval(musicTick,65);musicTick()}catch(e){}}
 function musicTheme(w,mode){if(w!==musicWorld||mode!==musicMode){musicWorld=w;musicMode=mode;musicStep=0}if(store.sound)musicStart()}
 document.addEventListener('visibilitychange',()=>document.hidden?musicStop():musicStart());addEventListener('pagehide',musicStop);document.addEventListener('click',()=>{if(store.sound)musicStart();else musicStop()});
-function speakerCard(el,who,line){if(!el)return;let name=who.split(',')[0].trim(),actor=actors[name]||actors.Lyra;el.classList.add('dialog-cast');el.innerHTML='<canvas width="96" height="114" aria-hidden="true"></canvas><div><strong>'+esc(who)+'</strong><p class="line-in">'+esc(line)+'</p></div>';let g=el.querySelector('canvas').getContext('2d');if(g&&globalThis.MicroHeroes){let gr=g.createLinearGradient(0,0,96,114);gr.addColorStop(0,'#1b2b45');gr.addColorStop(1,'#40516a');g.fillStyle=gr;g.fillRect(0,0,96,114);let bossIndex=themes.findIndex(t=>t[0]===who);if(bossIndex>=0&&globalThis.MicroBestiary){let D=themes[bossIndex];MicroBestiary.draw(g,{chapter:D[5],world:D[6],x:48,y:111,scale:1.25,time:120,boss:true})}else MicroHeroes.draw(g,{...actor,x:48,y:139,scale:1.75,time:120,pose:'idle'})}}
+function speakerCard(el,who,line){if(!el)return;let name=who.split(',')[0].trim(),actor=actors[name]||actors.Lyra;el.classList.add('dialog-cast');el.innerHTML='<canvas width="96" height="114" aria-hidden="true"></canvas><div><strong>'+esc(who)+'</strong><p class="line-in">'+esc(line)+'</p></div>';let g=el.querySelector('canvas').getContext('2d');if(g&&globalThis.MicroHeroes){let gr=g.createLinearGradient(0,0,96,114);gr.addColorStop(0,'#1b2b45');gr.addColorStop(1,'#40516a');g.fillStyle=gr;g.fillRect(0,0,96,114);let bossIndex=themes.findIndex(t=>t[0]===who);if(bossIndex>=0&&globalThis.MicroBestiary){let D=themes[bossIndex];DnbBestiary.draw(g,{chapter:D[5],world:D[6],x:48,y:111,scale:1.25,time:120,boss:true})}else DnbHeroes.draw(g,{...actor,x:48,y:139,scale:1.75,time:120,pose:'idle'})}}
 function stopCinema(){cancelAnimationFrame(cinemaFrame);cinemaFrame=0}
 function cinematicTransition(S,oldQ,newQ,launch){stopExplore();cancelAnimationFrame(animation);stopCinema();let w=oldQ.w,next=newQ.w,mode=S.mode==='hw',done=sagaCompleted(S,w);musicTheme(next,'quiet');app.innerHTML='<section class="story-chaptercard cinema-enter"><div class="story-ep">Interlude · '+esc(saga[w].title)+'</div><h2>'+esc(done?'Le passage s’ouvre':'Le voyage continue')+'</h2><div class="cinema-frame"><canvas id="cutscene" width="840" height="320" aria-hidden="true"></canvas><div class="cinema-title">'+esc(saga[next].title)+'</div><div class="cinema-sub">Destination : '+esc(themes[next][1])+'</div></div><div id="cutdialog" class="story-banner"></div><div class="buttons"><button id="cutnext">Entrer dans le territoire</button><button class="secondary" id="cutleave">Sauvegarder et quitter</button></div></section>';speakerCard($('cutdialog'),saga[w].npc,saga[w].out);let canvas=$('cutscene'),start=performance.now(),last=0;function frame(t){if(!canvas.isConnected)return;if(!last||t-last>50){drawCanvas(canvas,next,reduced?0:t,true,{effect:reduced?'':'neutral',start});last=t}if(!reduced)cinemaFrame=requestAnimationFrame(frame)}frame(start);$('cutnext').onclick=()=>{stopCinema();tone(540,.18);launch()};$('cutleave').onclick=()=>{stopCinema();keep();home()}}
 const storyRender=render,storyHome=home,storyResults=results,storyConfirm=confirmFinish;
@@ -499,7 +525,7 @@ function weather(ctx,w,t,floor){
  ctx.restore()
 }
 const reportVersion='astreon-dnb-report-v1';
-function reportObject(S){return {format:reportVersion,version:'1.4-rc',student:S.student,created:S.created,submitted:S.submitted,questions:S.qs.map((Q,j)=>({chapter:Q.w,slot:Q.i,text:Q.t,kind:Q.kind,expected:Q.expected,labels:Q.labels,response:S.answers[j]})),points:marks(S),total:marks(S).reduce((a,b)=>a+b,0)}}
+function reportObject(S){return {format:reportVersion,version:'1.5-rc',student:S.student,created:S.created,submitted:S.submitted,questions:S.qs.map((Q,j)=>({chapter:Q.w,slot:Q.i,text:Q.t,kind:Q.kind,expected:Q.expected,labels:Q.labels,response:S.answers[j]})),points:marks(S),total:marks(S).reduce((a,b)=>a+b,0)}}
 function exportObject(data,name){let a=document.createElement('a'),u=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),2000)}
 const v7Results=results;results=function(){let S=session;v7Results();if(!S||S.mode!=='hw'||!S.finished)return;let p=document.createElement('div');p.className='dnb-report';p.innerHTML='<strong>Remise au professeur</strong><p>Le fichier JSON contient le détail des réponses et permet au professeur de les importer dans son tableau de bord. À transmettre via l’ENT.</p><button id="exportJson">Télécharger le bilan professeur (.json)</button>';app.querySelector('.panel')?.append(p);$('exportJson').onclick=()=>exportObject(reportObject(S),'DNB-'+S.student.replace(/[^a-zA-Z0-9_-]/g,'_')+'.json')};
 const trialDialog=document.createElement('dialog');trialDialog.className='pack-dialog';trialDialog.setAttribute('aria-label','Défi multichapitres');document.body.append(trialDialog);
@@ -757,6 +783,18 @@ function themeColor(w){return themes[w][3]}
 function campaignAct(el,elapsed,completed){if(!el)return;let n=elapsed<1400?1:elapsed<3000?2:3;el.textContent=completed?['','Acte I — Le miroir s’éveille','Acte II — Les six sceaux se réunissent','Acte III — Le destin du royaume'][n]:'Épreuves restantes · Tu peux revenir aux questions'}
 
 const v13Results=results;results=function(){let S=session;v13Results();if(!S||S.mode!=='hw'||!S.finished)return;let p=document.createElement('section');p.className='credits-card';let h=honorTitles(pack).filter(a=>a.done);p.innerHTML='<div class="story-ep">Générique · Le voyage du Gardien</div><h3>'+esc(h.at(-1)?.name||'Gardien d’Astréon')+'</h3><p>Le royaume remercie le Gardien '+esc(S.student)+' pour son aventure.</p><div class="credits-grid"><div><strong>'+rank(pack).level+'</strong>Niveau du héros</div><div><strong>'+Object.keys(pack.victories).length+'</strong>Victoires</div><div><strong>'+Object.keys(secrets).length+'</strong>Passages secrets</div><div><strong>'+Object.keys(pack.chests).length+'</strong>Coffres ouverts</div></div><p>Compagnon : '+esc(activePet()?.name||'Aucun familier sélectionné')+'</p><p class="muted">Ces statistiques racontent ton aventure. Elles ne changent pas ta note de mathématiques.</p>';app.querySelector('.panel')?.append(p)};
+
+/* 1.5 — atmospheric rendering: local light, occlusion and tonal depth. */
+function atmosphere(ctx,w,t,W,H,hx=null,bx=null,floor=H*.78){
+ const L=themes[w][4];ctx.save();
+ let g=ctx.createRadialGradient(W*.66,H*.18,10,W*.66,H*.18,W*.62);g.addColorStop(0,L+'22');g.addColorStop(.4,L+'0d');g.addColorStop(1,'#07101b00');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ let mist=ctx.createLinearGradient(0,H*.37,0,H*.76);mist.addColorStop(0,'#00000000');mist.addColorStop(.65,L+'12');mist.addColorStop(1,'#00000000');ctx.fillStyle=mist;ctx.fillRect(0,H*.37,W,H*.39);
+ if(hx!==null){let x=hx,y=floor-80;let k=ctx.createRadialGradient(x,y,10,x,y,145);k.addColorStop(0,'#b1daff25');k.addColorStop(1,'#b1daff00');ctx.fillStyle=k;ctx.fillRect(x-145,y-145,290,290)}
+ if(bx!==null){let x=bx,y=floor-105;let k=ctx.createRadialGradient(x,y,15,x,y,150);k.addColorStop(0,L+'2b');k.addColorStop(1,L+'00');ctx.fillStyle=k;ctx.fillRect(x-150,y-150,300,300)}
+ let v=ctx.createRadialGradient(W*.48,H*.45,H*.22,W*.48,H*.45,W*.59);v.addColorStop(0,'#04091400');v.addColorStop(1,'#04091491');ctx.fillStyle=v;ctx.fillRect(0,0,W,H);
+ ctx.restore()
+}
+
 let full=document.createElement('button');full.className='secondary fullbtn';full.textContent='⛶ Plein écran';full.onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();else full.textContent='Plein écran indisponible'}catch(e){full.textContent='Plein écran indisponible'}};$('access').after(full);
 })();
 
