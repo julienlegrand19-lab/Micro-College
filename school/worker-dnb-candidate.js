@@ -148,7 +148,7 @@ function normalize(v){return String(v??'').trim().replace(/−/g,'-').replace(/,
 function correct(Q,ans){if(!Array.isArray(Q.expected)||!Array.isArray(ans)||ans.length!==Q.expected.length)return false;return Q.expected.every((e,i)=>{const a=normalize(ans[i]);if(!a)return false;if(Q.kind==='yn')return a===e;if(Q.kind==='frac'){const m=a.match(/^([+-]?\d+)(?:\/([1-9]\d*))?$/);if(!m)return false;const n=Number(m[1]),d=Number(m[2]||1);return Number.isSafeInteger(n)&&Number.isSafeInteger(d)&&gcd(n,d)===1&&fr(n,d)===String(e)}return /^[-+]?\d+(?:\.\d+)?$/.test(a)&&Math.abs(Number(a)-Number(e))<1e-8})}
 function expected(Q){return Q.expected.join(' ; ').replace(/\./g,',')}
 function build(w){return Array.from({length:4},(_,i)=>({...make(w,i),w,i}))}
-function makeHomework(){return worlds.flatMap((_,w)=>build(w))}
+function makeHomework(){return worlds.flatMap((_,w)=>Array.from({length:4},(_,i)=>{let Q;if((w===1||w===2)&&i===2)Q=alternate(w,Math.random()<.5?2:3);else if((w===1||w===2)&&i===3)Q=baseMake(w,Math.random()<.5?2:3);else Q=baseMake(w,i);return {...Q,w,i}}))}
 
 function marks(S){return worlds.map((w,i)=>S.qs.reduce((sum,Q,j)=>sum+(Q.w===i&&correct(Q,S.answers[j])?w[3]/4:0),0))}
 
