@@ -33,6 +33,29 @@ try{
  assert.equal(await page.locator('[data-cosmetic="skin"][data-color="#80543f"]').getAttribute('aria-pressed'),'true');
  assert.equal(await page.locator('[data-cosmetic="outfit"][data-color="#496c90"]').getAttribute('aria-pressed'),'true');
  await click('castleDefault');await click('castleClose');await page.setViewportSize({width:390,height:844});
+ // Verify the live fantasy renderer and its differentiated character silhouettes.
+ let art=await page.evaluate(()=>{
+  let variants=['knight','mage','ranger','scout'].map(character=>{
+   let c=document.createElement('canvas');c.width=240;c.height=280;let ctx=c.getContext('2d');
+   window.AstreonHero120.hero(ctx,{character,x:120,y:255,scale:2.4,time:100,pose:'idle'});
+   let pixels=ctx.getImageData(0,0,c.width,c.height).data,opaque=0,colors=new Set();
+   for(let i=0;i<pixels.length;i+=4)if(pixels[i+3]>100){opaque++;colors.add((pixels[i]<<16)|(pixels[i+1]<<8)|pixels[i+2])}
+   return {opaque,colors:colors.size,url:c.toDataURL()}
+  });return {valid:variants.every(v=>v.opaque>5000&&v.colors>100),distinct:new Set(variants.map(v=>v.url)).size}
+ });assert(art.valid);assert.equal(art.distinct,4);
+ assert.equal(await page.locator('.hero-card canvas').count(),4);
+ // Capture generated questions only inside this test; the game UI never exposes the answers before checking.
+ await page.evaluate(()=>{let original=window.homeworkQuestion;window.homeworkQuestion=(...args)=>{let q=original(...args);window.__weeklyTestQuestion=q;return q}});
+ await click('weekOpen');assert.equal(await page.locator('[data-week-task]').count(),6);
+ let week=await page.locator('#weekSelect').inputValue(),oldWeek=await page.locator('#weekSelect option').nth(1).getAttribute('value');
+ await page.locator('#weekSelect').selectOption(oldWeek);assert.equal(await page.locator('[data-week-task]').count(),6);await page.locator('#weekSelect').selectOption(week);
+ await page.locator('[data-week-task="0"]').click();await click('weekCheck');assert((await page.locator('#weekFeedback').textContent()).includes('Complète'));
+ await click('weekReturn');
+ async function finishWeekly(j){await page.locator('[data-week-task="'+j+'"]').click();let q=await page.evaluate(()=>window.__weeklyTestQuestion);for(let i=0;i<q.expected.length;i++){let f=page.locator('#week'+i);if(q.options?.[i])await f.selectOption(String(q.expected[i]));else await f.fill(String(q.expected[i]))}await click('weekCheck');assert(/Médaillon|Épreuve réussie/.test(await page.locator('#weekFeedback').textContent()));await click('weekReturn')}
+ for(let j=0;j<6;j++)await finishWeekly(j);
+ await finishWeekly(0);assert((await page.locator('.weekly-medal').textContent()).includes('6/6'));await click('weekClose');
+ await page.reload();await click('weekOpen');assert((await page.locator('.weekly-medal').textContent()).includes('6/6'));await click('weekClose');
+
 
  // The personal notebook is independent of the graded assignment.
  await click('personalOpen');assert((await page.locator('.personal-stats').textContent()).includes('0/24'));
