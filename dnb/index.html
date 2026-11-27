@@ -1352,7 +1352,7 @@ const home122=home;home=function(){home122();let p=app.querySelector('.panel');i
 
 
 /* V1.28 : capsule de révision Pythagore. */
-function filmLink128(label){let a=document.createElement('a');a.className='scratch-link';a.href='pythagore.html?v=131';a.textContent=label;return a}
+function filmLink128(label){let a=document.createElement('a');a.className='scratch-link';a.href='pythagore.html?v=132';a.textContent=label;return a}
 const filmMentor128=mentorView;mentorView=function(w,tab='intro',index=0){filmMentor128(w,tab,index);if(w===1&&mentorAllowed())mentorDialog.querySelector('.mentor-tabs')?.append(filmLink128('▶ Capsule animée de Pythagore'))};
 const filmHome128=home;home=function(){filmHome128();app.querySelector('[data-mentor="1"]')?.parentElement.append(filmLink128('▶ Revoir Pythagore en vidéo animée'))};
 const filmResults128=results;results=function(){let S=session;filmResults128();if(S?.mode==='hw'&&S.finished){let p=document.createElement('section');p.className='dnb-report';p.innerHTML='<h3>Progresser après le devoir</h3><p>Revois le cours avec Pythagore, passe le quiz et tente une nouvelle épreuve. Résultat indicatif pour ce prototype, sans modification de la note remise.</p>';p.append(filmLink128('▶ Revoir Pythagore et s’entraîner'));app.querySelector('.panel')?.append(p)}};

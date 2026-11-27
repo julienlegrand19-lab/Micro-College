@@ -65,8 +65,9 @@ function draw(c,o){
  c.translate(480,270);c.scale(zoom,zoom);c.translate(-480,-270);
  if(backdrop)c.drawImage(backdrop,0,0);else scenery(c);
  const pose=(name,id,gest=true)=>motion(t,id,voice===name&&o.playing,active,gest);
+ const teacher=opts=>(root.AstreonPortrait||root.AstreonSage).draw(c,{...opts,animate:active,breath:active?Math.sin(t/1600):0});
  if(shot==='wide'){
-  root.AstreonSage.draw(c,{x:477+(active?Math.sin(t/3500)*7:0),y:253,scale:1.55,mouth:voice==='Pythagore'?open:0,pose:pose('Pythagore',0)});
+  teacher({x:477,y:265,scale:1.98,mouth:voice==='Pythagore'?open:0,pose:pose('Pythagore',0)});
   pupil(c,{id:0,x:150,y:352,scale:1.43,face:1,mouth:voice==='Nikos'?open:0,pose:pose('Nikos',1,false)});
   pupil(c,{id:1,x:768,y:343,scale:1.42,face:-1,mouth:voice==='Daphné'?open:0,pose:pose('Daphné',2,false)});
   pupil(c,{id:2,x:307,y:400,scale:1.23,face:1,mouth:voice==='Léon'?open:0,pose:pose('Léon',3,false)});
@@ -74,14 +75,14 @@ function draw(c,o){
   poly(c,[[420,405],[520,405],[520,415],[420,415]],'#e4cfaa');
   path(c,[['M',445,410],['L',445,380],['L',496,410],['Z']],null,'#8f6340',3);
  }else if(shot==='student'){
-  root.AstreonSage.draw(c,{x:795,y:245,scale:1.24,mouth:0,pose:pose('Pythagore',0,false)});
+  teacher({x:795,y:245,scale:1.48,mouth:0,pose:pose('Pythagore',0,false)});
   let id=voice==='Nikos'?0:voice==='Daphné'?1:2;
   pupil(c,{id,x:445,y:300,scale:2.55,face:1,mouth:open,pose:pose(voice,id+1,false)});
   pupil(c,{id:(id+1)%3,x:150,y:348,scale:1.2,face:1,mouth:0,pose:motion(t,id+2,false,active)});
   table(c,260,478,375);
  }else{
   pupil(c,{id:0,x:60,y:412,scale:.92,face:1,mouth:0,pose:pose('Nikos',1,false)});
-  root.AstreonSage.draw(c,{x:180,y:270,scale:1.70,mouth:voice==='Pythagore'?open:0,pose:pose('Pythagore',0,o.kind!=='squares')});
+  teacher({x:177,y:280,scale:2.28,mouth:voice==='Pythagore'?open:0,pose:pose('Pythagore',0,o.kind!=='squares')});
   table(c,22,472,325);
  }
  // soft vignette, not a dark scene
