@@ -19,8 +19,12 @@ try{
  await click('chronicleOpen');assert.equal(await page.locator('.chronicle-card').count(),6);
  await page.locator('[data-chronicle="guardians"]').click();assert.equal(await page.locator('.chronicle-card.locked').count(),6);
  await page.locator('[data-chronicle="actors"]').click();assert.equal(await page.locator('.chronicle-card').count(),5);
- await page.locator('[data-chronicle="relics"]').click();assert.equal(await page.locator('.chronicle-card').count(),8);
+ await page.locator('[data-chronicle="relics"]').click();assert.equal(await page.locator('.chronicle-card').count(),11);
  await click('closeChronicle');
+ await click('dailyOpen');await click('replayStart');await page.locator('#replay0').fill('0');for(const f of await page.locator('dialog[open] [data-study-field]').all())await f.fill('0');await click('replayCheck');await page.locator('#replayFeedback').waitFor();await click('replayNext');await click('replayClose');
+ await click('survivalOpen');await click('replayStart');assert.equal(await page.locator('.survival-hud').count(),1);await click('replayClose');
+ await page.locator('#combatDifficulty').selectOption('story');
+
 
 
  assert.equal(await page.locator('[data-focus]').count(),6);
@@ -28,7 +32,7 @@ try{
  await page.locator('[data-focus="0"]').click();await page.locator('#focusCheck').waitFor();await click('studyClose');
  await click('mockOpen');await click('beginMock');assert.equal(await page.locator('[data-mock]').count(),24);await page.locator('#mockTime').waitFor();await page.locator('dialog[open]').evaluate(d=>d.close());
  await click('hw');await optional('prologueSkip');await page.locator('#student').fill('TEST-E01');await click('start');
- await page.locator('#walk').waitFor();assert.equal(await page.locator('#secret').count(),1);
+ await page.locator('#walk').waitFor();assert.equal(await page.locator('#secret').count(),1);assert.equal(await page.locator('#actHP').getAttribute('max'),'9');
  await page.keyboard.down('ArrowRight');try{await page.waitForFunction(()=>Number(document.querySelector('#routeProgress')?.value)>10)}finally{await page.keyboard.up('ArrowRight')}
  await page.locator('#jump').click();
  await click('direct');await page.locator('#app .question').waitFor();
