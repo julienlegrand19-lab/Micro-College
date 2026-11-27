@@ -225,7 +225,7 @@ export default {async fetch(req,env){
  if(!env.DB||typeof env.AUTH_PEPPER!=='string'||env.AUTH_PEPPER.length<32||typeof env.ADMIN_SECRET!=='string'||env.ADMIN_SECRET.length<24)fail('Service non configuré.',503);
  if(path==='/teacher/login'&&method==='POST'){const b=await json(req,4096);await loginLimit(env,req,'teacher','admin');if(typeof b.password!=='string'||b.password.length>256||!equal(await mac(env,'admin',b.password),await mac(env,'admin',env.ADMIN_SECRET)))fail('Identifiants incorrects.',401);return response({token:await session(env,'teacher')})}
  if(path==='/student/login'&&method==='POST'){const b=await json(req,4096),id=norm(b.name);if(!id||id.length>24||typeof b.password!=='string'||b.password.length>128)fail('Identifiants incorrects.',401);await loginLimit(env,req,'student',id);const u=await env.DB.prepare('SELECT * FROM students WHERE id=? AND active=1').bind(id).first();const h=await mac(env,'password',id+'|'+b.password);if(!u||!equal(h,u.password_mac))fail('Identifiants incorrects.',401);return response({token:await session(env,'student',id),id:u.id,name:u.pseudo,appearance:JSON.parse(u.appearance)})}
- if(path==='/teacher/dnb/results'||path.startsWith('/student/dnb/'))return await dnbRoutes(req,env,path,method);
+ if(path==='/teacher/dnb/results'||path==='/teacher/dnb/roster'||path.startsWith('/student/dnb/'))return await dnbRoutes(req,env,path,method);
  if(path.startsWith('/teacher/')){
  const s=await auth(env,req,'teacher');
  if(path==='/teacher/logout'&&method==='POST'){await env.DB.prepare('DELETE FROM sessions WHERE token_mac=?').bind(s.hash).run();return response({ok:true})}
