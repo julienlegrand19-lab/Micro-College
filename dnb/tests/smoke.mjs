@@ -57,13 +57,13 @@ try{
  await click('direct');await page.locator('#app .question').waitFor();
  assert.equal(await page.locator('#mentorHelp').count(),0);assert.equal(await page.locator('.mentor-dialog[open]').count(),0);
  let attempt=await page.evaluate(()=>JSON.parse(localStorage.getItem('gardiens-dnb-v1')).hw);
- assert.equal(attempt.qs.length,24);
+ assert.equal(attempt.qs.length,24);assert.equal(attempt.qs.filter(q=>q.kind==='proof').length,12);
  for(let i=0;i<24;i++){
    await question();
    let Q=attempt.qs[i];
    if(Q.kind==='yn')await page.locator('[data-yn="'+Q.expected[0]+'"]').click();
-   else for(let j=0;j<Q.expected.length;j++)await page.locator('#a'+j).fill(String(Q.expected[j]));
-   if(i===4){await page.reload();await click('hw');await question();let saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('gardiens-dnb-v1')).hw);assert.equal(saved.at,i);assert.deepEqual(saved.answers[i],Q.expected.map(String))}
+   else for(let j=0;j<Q.expected.length;j++){let f=page.locator('#a'+j);if(Q.kind==='proof'&&Q.options[j])await f.selectOption(String(Q.expected[j]));else await f.fill(String(Q.expected[j]))}
+   if(i===4){assert.equal(await page.locator('.guided-step').count(),4);await page.reload();await click('hw');await question();let saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('gardiens-dnb-v1')).hw);assert.equal(saved.at,i);assert.deepEqual(saved.answers[i],Q.expected.map(String))}
    await click('next');
  }
  await optional('finalContinue');await click('submit');await page.locator('#exportJson').waitFor();assert.equal((await page.locator('.score').textContent()).trim(),'20/20');
@@ -72,7 +72,7 @@ try{
  const desktop=await browser.newPage({viewport:{width:1280,height:800},reducedMotion:'reduce'});desktop.on('pageerror',e=>errors.push(String(e)));await desktop.goto(base+'professeur.html');await desktop.locator('#files').setInputFiles({name:'test.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(report))});await desktop.waitForFunction(()=>document.querySelector('#n').textContent==='1');assert.equal((await desktop.locator('#avg').textContent()).trim(),'20');assert((await desktop.locator('#grades').textContent()).includes('Local non certifié'));await desktop.locator('#sourceFilter').selectOption('server');assert.equal(await desktop.locator('#n').textContent(),'0');await desktop.locator('#sourceFilter').selectOption('local');assert.equal(await desktop.locator('#n').textContent(),'1');await desktop.close();
  const online=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});online.on('pageerror',e=>errors.push(String(e)));
  let saved=final.qs.map(()=>null),position=0;
- const publicAttempt=finished=>({student:'test-e02',qs:finished?final.qs:final.qs.map(({t,kind,labels,diagram,w,i})=>({t,kind,labels,diagram,w,i})),answers:saved,at:position,finished,created:final.created,submitted:finished?new Date().toISOString():null});
+ const publicAttempt=finished=>({student:'test-e02',qs:finished?final.qs:final.qs.map(({t,kind,labels,diagram,w,i,options})=>({t,kind,labels,diagram,w,i,options})),answers:saved,at:position,finished,created:final.created,submitted:finished?new Date().toISOString():null});
  await online.route('https://micro-college.julienlegrand19.workers.dev/**',async route=>{
   let req=route.request(),path=new URL(req.url()).pathname;const headers={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET,POST,PUT,OPTIONS','Access-Control-Allow-Headers':'Authorization,Content-Type','Content-Type':'application/json'};
   if(req.method()==='OPTIONS')return route.fulfill({status:200,headers,body:'{}'});
