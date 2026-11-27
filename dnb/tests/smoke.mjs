@@ -38,7 +38,7 @@ try{
  assert.equal(await page.locator('.atlas-node').count(),6);
  assert.equal(await page.locator('[data-mentor]').count(),6);
  assert.equal(await page.locator('.scratch-territory').count(),1);
- await page.locator('.scratch-link').click();await page.locator('#learn').waitFor();
+ await page.locator('.scratch-link:not(.studio-link)').click();await page.locator('#learn').waitFor();
  await click('learn');assert.equal(await page.locator('[data-lesson]').count(),6);await click('adaListen');assert((await page.locator('#adaVoiceStatus').textContent()).length>0);await click('adaStop');await click('home');assert.equal(await page.locator('[data-room]').count(),16);
  await page.locator('[data-route="2"]').click();assert.equal(await page.locator('[data-room]').count(),6);
  await page.locator('[data-room="12"]').click();await page.locator('#response').fill('26');await click('check');assert((await page.locator('#feedback').textContent()).includes('réussi'));await click('home');await page.locator('[data-route="-1"]').click();
