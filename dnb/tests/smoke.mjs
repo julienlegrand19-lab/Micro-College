@@ -13,6 +13,10 @@ async function question(){await optional('cutnext');await optional('direct');awa
 try{
  await page.goto(base);await page.locator('#hw').waitFor();
  assert.equal(await page.locator('.atlas-node').count(),6);
+ assert.equal(await page.evaluate(()=>typeof AstreonArt?.hero==='function'&&typeof AstreonArt?.boss==='function'),true);
+ // Exercise every new illustration on a real canvas, with actual rendering state.
+ const painted=await page.evaluate(()=>{let canvas=document.createElement('canvas');canvas.width=400;canvas.height=400;let g=canvas.getContext('2d');let n=0;for(let character of ['knight','mage','ranger','scout'])for(let pose of ['idle','run','jump','cast','hurt']){g.clearRect(0,0,400,400);AstreonArt.hero(g,{character,pose,x:200,y:300,scale:3,time:1234});if(g.getImageData(0,0,400,400).data.some((v,i)=>i%4===3&&v>0))n++}for(let territory=0;territory<6;territory++)for(let attack of [false,true]){g.clearRect(0,0,400,400);AstreonArt.boss(g,{territory,attack,x:200,y:300,scale:3,time:1234});if(g.getImageData(0,0,400,400).data.some((v,i)=>i%4===3&&v>0))n++}return n});assert.equal(painted,32);
+
  assert.equal(await page.locator('[data-focus]').count(),6);
  await click('villageOpen');await page.locator('[data-villager="bram"]').click();await page.locator('[data-choice="0"]').click();assert.equal(await page.locator('[data-forge="blade"]').isDisabled(),true);await click('villageBack');await click('villageJournal');assert.equal(await page.getByText('Maître de la crypte',{exact:true}).count(),1);await click('villageBack');await click('villageCrypt');await click('cryptStart');await page.locator('#crypt0').fill('0');await click('cryptCheck');await click('cryptNext');await page.locator('#crypt0').fill('0');await click('cryptCheck');await click('cryptNext');await page.locator('[data-move="spell"]').click();assert.equal(await page.locator('[data-move="spell"]').isDisabled(),true);await click('villageClose');await page.locator('#hw').waitFor();
  await page.locator('[data-focus="0"]').click();await page.locator('#focusCheck').waitFor();await click('studyClose');
