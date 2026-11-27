@@ -144,20 +144,58 @@ function extended(w,i,j){
 }
 make=function(w,i){let j=rand(0,4);return j<2?earlierMake(w,i):extended(w,i,j-2)};
 
+
+/* Guided geometry: four independently scored steps, stable task structure. */
+function guidedGeometry(Q,w,i){
+ const n=[...Q.t.matchAll(/\d+/g)].map(m=>Number(m[0])),v=Q.expected[0],s=Object.fromEntries([...Q.t.matchAll(/\b([A-Z]{2}) = (\d+)/g)].map(m=>[m[1],+m[2]]));
+ const choice=(label,answer,...wrong)=>({label,answer,options:[answer,...wrong]});
+ const number=(label,answer)=>({label,answer,options:null});
+ const theorem=(answer,...wrong)=>choice('Propriété utilisée',answer,...wrong);
+ let steps=[];
+ if(w===1&&i<2){
+  let target=i===0?'BC':'AC',a=n[0],b=n[1];
+  steps=[theorem('Théorème de Pythagore','Réciproque de Pythagore','Contraposée de Pythagore','Théorème de Thalès'),choice('Dans ABC rectangle en A, on écrit :','BC² = AB² + AC²','AB² = BC² + AC²','AC² = AB² + BC²','BC = AB + AC'),choice('Le carré de '+target+' vaut :',i===0?a+'² + '+b+'²':a+'² − '+b+'²',i===0?a+'² − '+b+'²':a+'² + '+b+'²',a+' + '+b,a+' × '+b),number('Donc '+target+' (en cm) =',v)];
+ }else if(w===1){
+  let [a,b,c]=n.sort((a,b)=>a-b),yes=v==='oui';
+  steps=[number('Carré du plus grand côté (cm²)',c*c),number('Somme des carrés des deux autres côtés (cm²)',a*a+b*b),theorem(yes?'Réciproque de Pythagore':'Contraposée de Pythagore',yes?'Contraposée de Pythagore':'Réciproque de Pythagore','Théorème de Pythagore','Théorème de Thalès'),choice('Conclusion',yes?'Le triangle est rectangle.':'Le triangle n’est pas rectangle.',yes?'Le triangle n’est pas rectangle.':'Le triangle est rectangle.','Le triangle est forcément équilatéral.','Les longueurs ne permettent jamais de conclure.')];
+ }else if(w===2&&i<2){
+  let classic=i===0,target=classic?'DE':'DE';
+  let ratio=classic?'AD/AB = DE/BC':'AD/DB = DC/DE';
+  let calc=classic?s.BC+' × '+s.AD+' / '+s.AB:s.DC+' × '+s.DB+' / '+s.AD;
+  let wrong=classic?[s.BC+' × '+s.AB+' / '+s.AD,s.BC+' + '+s.AD,s.BC+' − '+s.AD]:[s.DC+' × '+s.AD+' / '+s.DB,s.DC+' + '+s.DB,s.DC+' − '+s.AD];
+  steps=[theorem('Théorème de Thalès','Réciproque de Thalès','Contraposée de Thalès','Théorème de Pythagore'),choice('Les rapports correspondants sont :',ratio,...(classic?['AB/AD = DE/BC','AD/AB = BC/DE','AD/BC = DE/AB']:['DB/AD = DC/DE','AD/DC = DE/DB','AD/DB = DE/DC'])),choice('Pour calculer '+target+', on effectue :',calc,...wrong),number('Donc '+target+' (en cm) =',v)];
+ }else if(w===2){
+  let yes=v==='oui';
+  steps=[number('Produit en croix AD × AC',s.AD*s.AC),number('Produit en croix AE × AB',s.AE*s.AB),theorem(yes?'Réciproque de Thalès':'Contraposée de Thalès',yes?'Contraposée de Thalès':'Réciproque de Thalès','Théorème de Thalès','Théorème de Pythagore'),choice('Conclusion',yes?'(DE) ∥ (BC)':'(DE) et (BC) ne sont pas parallèles',yes?'(DE) et (BC) ne sont pas parallèles':'(DE) ∥ (BC)','(DE) ⟂ (BC)','DE = BC')];
+ }else if(w===3&&i<3){
+  let angle=n[1],known=n[0],f=['sin','cos','tan'][i],target=i===1?'AC':'AB',den=i===2?'AC':'BC',ratio=f+'(ACB) = '+target+'/'+den;
+  steps=[choice('Dans ABC rectangle en A, quelle relation utiliser ?',ratio,...(i===0?['cos(ACB) = AB/BC','tan(ACB) = AB/BC','sin(ACB) = BC/AB']:i===1?['sin(ACB) = AC/BC','tan(ACB) = AC/BC','cos(ACB) = BC/AC']:['sin(ACB) = AB/AC','cos(ACB) = AB/AC','tan(ACB) = AC/AB'])),choice('On remplace par les données :',f+'('+angle+'°) = '+target+'/'+known,f+'('+angle+'°) = '+known+'/'+target,f+'('+known+'°) = '+target+'/'+angle,f+'('+angle+'°) = '+target+' × '+known),choice('On isole '+target+' :',target+' = '+known+' × '+f+'('+angle+'°)',target+' = '+known+' / '+f+'('+angle+'°)',target+' = '+f+'('+angle+'°) / '+known,target+' = '+known+' + '+f+'('+angle+'°)'),number('Donc '+target+' ≈ (en cm, au dixième)',v)];
+ }else if(w===3){
+  let a=s.AB,b=s.AC;
+  steps=[choice('Dans ABC rectangle en A, on utilise :','tan(ACB) = AB/AC','sin(ACB) = AB/AC','cos(ACB) = AB/AC','tan(ACB) = AC/AB'),choice('On remplace par les données :','tan(ACB) = '+a+'/'+b,'tan(ACB) = '+b+'/'+a,'tan(ACB) = '+a+' × '+b,'tan(ACB) = '+a+' + '+b),choice('Pour trouver l’angle, on utilise :','arctan('+a+'/'+b+')','tan('+a+'/'+b+')','arcsin('+a+'/'+b+')','arccos('+a+'/'+b+')'),number('Donc ACB ≈ (en degrés, au dixième)',v)];
+ }
+ if(steps.length!==4)return Q;
+ let options=steps.map(p=>{if(!p.options)return null;let a=[...new Set(p.options)];while(a.length<4)a.push('Aucune de ces expressions'+(a.length===3?'':' ('+a.length+')'));for(let j=a.length-1;j>0;j--){let k=rand(0,j);[a[j],a[k]]=[a[k],a[j]]}return a});
+ return {...Q,kind:'proof',labels:steps.map(p=>p.label),expected:steps.map(p=>p.answer),options,solution:steps.map(p=>p.label+' : '+p.answer).join('\n')};
+}
+function homeworkQuestion(w,i){let Q=baseMake(w,i);if(w>=1&&w<=3){if((w===1||w===2)&&i>=2)Q=baseMake(w,Math.random()<.5?2:3);Q=guidedGeometry(Q,w,i)}return {...Q,w,i}}
+
 function normalize(v){return String(v??'').trim().replace(/−/g,'-').replace(/,/g,'.').replace(/\s/g,'').toLowerCase()}
-function correct(Q,ans){if(!Array.isArray(Q.expected)||!Array.isArray(ans)||ans.length!==Q.expected.length)return false;return Q.expected.every((e,i)=>{const a=normalize(ans[i]);if(!a)return false;if(Q.kind==='yn')return a===e;if(Q.kind==='frac'){const m=a.match(/^([+-]?\d+)(?:\/([1-9]\d*))?$/);if(!m)return false;const n=Number(m[1]),d=Number(m[2]||1);return Number.isSafeInteger(n)&&Number.isSafeInteger(d)&&gcd(n,d)===1&&fr(n,d)===String(e)}return /^[-+]?\d+(?:\.\d+)?$/.test(a)&&Math.abs(Number(a)-Number(e))<1e-8})}
+function proofFraction(Q,ans){if(!Array.isArray(Q.expected)||!Array.isArray(ans)||ans.length!==Q.expected.length)return 0;return Q.expected.reduce((n,e,i)=>{let a=normalize(ans[i]);return n+Number(!!a&&(typeof e==='number'?/^[-+]?\d+(?:\.\d+)?$/.test(a)&&Math.abs(Number(a)-e)<1e-8:a===normalize(e)))},0)/Q.expected.length}
+function questionFraction(Q,ans){return Q.kind==='proof'?proofFraction(Q,ans):Number(correct(Q,ans))}
+function correct(Q,ans){if(Q.kind==='proof')return proofFraction(Q,ans)===1;if(!Array.isArray(Q.expected)||!Array.isArray(ans)||ans.length!==Q.expected.length)return false;return Q.expected.every((e,i)=>{const a=normalize(ans[i]);if(!a)return false;if(Q.kind==='yn')return a===e;if(Q.kind==='frac'){const m=a.match(/^([+-]?\d+)(?:\/([1-9]\d*))?$/);if(!m)return false;const n=Number(m[1]),d=Number(m[2]||1);return Number.isSafeInteger(n)&&Number.isSafeInteger(d)&&gcd(n,d)===1&&fr(n,d)===String(e)}return /^[-+]?\d+(?:\.\d+)?$/.test(a)&&Math.abs(Number(a)-Number(e))<1e-8})}
 function expected(Q){return Q.expected.join(' ; ').replace(/\./g,',')}
 function build(w){return Array.from({length:4},(_,i)=>({...make(w,i),w,i}))}
-function makeHomework(){return worlds.flatMap((_,w)=>Array.from({length:4},(_,i)=>{let Q;if((w===1||w===2)&&i===2)Q=alternate(w,Math.random()<.5?2:3);else if((w===1||w===2)&&i===3)Q=baseMake(w,Math.random()<.5?2:3);else Q=baseMake(w,i);return {...Q,w,i}}))}
+function makeHomework(){return worlds.flatMap((_,w)=>Array.from({length:4},(_,i)=>homeworkQuestion(w,i)))}
 
-function marks(S){return worlds.map((w,i)=>S.qs.reduce((sum,Q,j)=>sum+(Q.w===i&&correct(Q,S.answers[j])?w[3]/4:0),0))}
+function marks(S){return worlds.map((w,i)=>S.qs.reduce((sum,Q,j)=>sum+(Q.w===i?questionFraction(Q,S.answers[j])*w[3]/4:0),0))}
 
 
 /* DNB: authoritative server-side questions, one attempt per student, no answer keys in drafts. */
 const DNB_ASSIGNMENT='noel-2026-v1';
-function dnbAnswers(qs,raw){if(!Array.isArray(raw)||raw.length!==qs.length)fail('Réponses invalides.');return raw.map((a,i)=>{if(a===null)return null;if(!Array.isArray(a)||a.length!==qs[i].labels.length||a.some(v=>typeof v!=='string'||v.length>80))fail('Réponse invalide.');return a.map(v=>v.trim())})}
+function dnbAnswers(qs,raw){if(!Array.isArray(raw)||raw.length!==qs.length)fail('Réponses invalides.');return raw.map((a,i)=>{if(a===null)return null;if(!Array.isArray(a)||a.length!==qs[i].labels.length||a.some(v=>typeof v!=='string'||v.length>200))fail('Réponse invalide.');return a.map(v=>v.trim())})}
 function dnbResult(row){let qs=JSON.parse(row.questions),answers=JSON.parse(row.answers),S={qs,answers};let points=marks(S);return {format:'astreon-dnb-report-v1',version:'server-1',student:row.student_id,created:new Date(row.created_at*1000).toISOString(),submitted:row.submitted_at?new Date(row.submitted_at*1000).toISOString():null,questions:qs.map((Q,j)=>({chapter:Q.w,slot:Q.i,text:Q.t,kind:Q.kind,expected:Q.expected,labels:Q.labels,response:answers[j]})),points,total:points.reduce((a,b)=>a+b,0)}}
-function dnbPublic(row){let qs=JSON.parse(row.questions),answers=JSON.parse(row.answers),finished=!!row.submitted_at;return {assignment:DNB_ASSIGNMENT,student:row.student_id,qs:finished?qs:qs.map(({t,kind,labels,diagram,w,i})=>({t,kind,labels,diagram,w,i})),answers,at:row.position,finished,created:new Date(row.created_at*1000).toISOString(),submitted:finished?new Date(row.submitted_at*1000).toISOString():null,...(finished?{result:dnbResult(row)}:{})}}
+function dnbPublic(row){let qs=JSON.parse(row.questions),answers=JSON.parse(row.answers),finished=!!row.submitted_at;return {assignment:DNB_ASSIGNMENT,student:row.student_id,qs:finished?qs:qs.map(({t,kind,labels,diagram,w,i,options})=>({t,kind,labels,diagram,w,i,options})),answers,at:row.position,finished,created:new Date(row.created_at*1000).toISOString(),submitted:finished?new Date(row.submitted_at*1000).toISOString():null,...(finished?{result:dnbResult(row)}:{})}}
 async function dnbRead(env,id){return env.DB.prepare('SELECT * FROM dnb_attempts WHERE student_id=? AND assignment=?').bind(id,DNB_ASSIGNMENT).first()}
 async function dnbRoutes(req,env,path,method){
  if(path==='/teacher/dnb/results'&&method==='GET'){await auth(env,req,'teacher');const {results}=await env.DB.prepare('SELECT a.*,s.classroom FROM dnb_attempts a JOIN students s ON s.id=a.student_id WHERE a.assignment=? AND a.submitted_at IS NOT NULL ORDER BY s.classroom,s.pseudo').bind(DNB_ASSIGNMENT).all();return response({assignment:DNB_ASSIGNMENT,reports:results.map(r=>({...dnbResult(r),classroom:r.classroom}))})}
