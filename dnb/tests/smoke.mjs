@@ -130,6 +130,27 @@ try{
   let result={ok:true};if(path==='/health')result={ok:true,configured:true,dnb:1};else if(path==='/student/login')result={token:'a'.repeat(64),id:'test-e02',name:'TEST-E02'};else if(path==='/student/dnb/start')result=publicAttempt(false);else if(path==='/student/dnb/save'){let p=req.postDataJSON();saved=p.answers;position=p.at}else if(path==='/student/dnb/submit'){let p=req.postDataJSON();saved=p.answers;position=p.at;result=publicAttempt(true)}else if(path!=='/student/logout')throw Error('Unexpected mocked route '+path);await route.fulfill({status:200,headers,body:JSON.stringify(result)})
  });
  await online.goto(base+'?school=1');await online.locator('#hw').click();await online.locator('#onlineName').fill('TEST-E02');await online.locator('#onlinePass').fill('test-only');await online.locator('#onlineStart').click();await online.locator('#direct').click();await online.locator('#app .question').waitFor();let Q=final.qs[0];await online.locator('#a0').fill(String(Q.expected[0]));await online.locator('#finish').click();await online.locator('#submit').click();await online.getByText('Remise confirmée par le serveur', {exact:false}).waitFor();assert.equal(saved[0][0],String(Q.expected[0]));await online.close();
+
+ const exam=await browser.newPage({viewport:{width:375,height:812},reducedMotion:'reduce'});exam.on('pageerror',e=>errors.push(String(e)));exam.on('dialog',d=>d.accept());
+ await exam.goto(base+'examen.html');await exam.locator('#newExam').click();assert.equal(await exam.locator('[data-nav]').count(),14);assert(await exam.locator('[data-nav="6"]').isDisabled());assert.equal(await exam.locator('.answer-card').count(),0);
+ let examData=await exam.evaluate(()=>JSON.parse(localStorage.getItem('astreon-exam-114')));
+ for(let i=0;i<14;i++){
+   let q=examData.qs[i];
+   for(let j=0;j<q.expected.length;j++){let f=exam.locator('#a'+j);if(q.options?.[j])await f.selectOption(String(q.expected[j]));else await f.fill(String(q.expected[j]))}
+   if(i===2){await exam.reload();await exam.locator('#resume').click();assert.equal(await exam.locator('#a0').inputValue(),String(q.expected[0]));}
+   if(i===5){await exam.locator('#closeAuto').click();assert(await exam.locator('[data-nav="0"]').isDisabled());}
+   else if(i<13)await exam.locator('#next').click();
+   else await exam.locator('#finish').click();
+ }
+ assert.equal(await exam.locator('.score').textContent(),'20/20');assert.equal(await exam.locator('.answer-card').count(),14);
+ await exam.evaluate(()=>{let m=JSON.parse(localStorage.getItem('astreon-exam-114'));m.finished=false;m.deadline=Date.now()-1;localStorage.setItem('astreon-exam-114',JSON.stringify(m))});
+ await exam.reload();await exam.locator('#resume').click();await exam.locator('.score').waitFor();await exam.close();
+ const voice=await browser.newPage();await voice.addInitScript(()=>{
+  const vs=[{name:'France standard',voiceURI:'std',lang:'fr-FR',localService:true},{name:'France Natural',voiceURI:'natural',lang:'fr-FR',localService:true},{name:'Québec Natural',voiceURI:'ca',lang:'fr-CA',localService:true},{name:'France cloud',voiceURI:'cloud',lang:'fr-FR',localService:false}];
+  Object.defineProperty(window,'speechSynthesis',{value:{getVoices:()=>vs,cancel(){},speak(u){window.lastVoice={name:u.voice.name,lang:u.lang,text:u.text}},addEventListener(){}}});
+  Object.defineProperty(window,'SpeechSynthesisUtterance',{value:class{constructor(text){this.text=text}}});
+ });
+ await voice.goto(base+'scratch.html');await voice.locator('#learn').click();let select=voice.getByLabel('Voix française du mentor');assert.equal(await select.locator('option').count(),2);assert.equal(await select.inputValue(),'natural');await voice.getByRole('button',{name:'Écouter un extrait'}).click();assert.equal(await voice.evaluate(()=>window.lastVoice.lang),'fr-FR');await select.selectOption('std');await voice.reload();await voice.locator('#learn').click();assert.equal(await voice.getByLabel('Voix française du mentor').inputValue(),'std');await voice.close();
  assert.deepEqual(errors,[]);
  console.log('PASS: mobile local campaign, reload, perfect grading, teacher import, mocked online submission, study and mock entry');
 }finally{await browser.close()}
