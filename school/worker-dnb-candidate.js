@@ -95,8 +95,57 @@ function alternate(w,i){
 }
 make=function(w,i){return Math.random()<.5?baseMake(w,i):alternate(w,i)};
 
+
+/* V1.0 — three additional templates per chapter/slot. */
+const earlierMake=make;
+function extended(w,i,j){
+ const a=rand(2,7),b=rand(2,8),c=rand(2,6),d=rand(3,9),k=rand(2,5),s=pick([-1,1]),t=pick([-1,1]);
+ const F=(text,n,den,sol)=>q(text+' Donner le résultat irréductible.',fr(n,den),sol,'Écris les étapes sur ton brouillon.','frac');
+ const N=(text,value,sol,label='Réponse',diagram='')=>q(text,value,sol,'Identifie la propriété utile.','num',[label],diagram);
+ const C=(text,values,sol,labels=['Coefficient de x²','Coefficient de x','Constante'])=>q(text,values,sol,'Écris les étapes sur ton brouillon.','coeff',labels);
+ const Y=(text,yes,sol)=>q(text,yes?'oui':'non',sol,'Justifie en comparant les deux membres.','yn');
+ if(w===0){
+  if(i===0){let m=a+1,n=a,den=m*k,num=n*k;if(j===0)return F('Réduire '+num+'/'+den+' à sa plus simple expression.',n,m,'Diviser les deux termes par '+k+'.');if(j===1)return F('Écrire '+(-den)+'/'+num+' sous forme irréductible.',-m,n,'Le quotient est négatif ; diviser par '+k+'.');return F('Une réserve compte '+num+' cristaux bleus sur '+den+' cristaux. Quelle fraction représente les cristaux bleus ?',n,m,'La proportion vaut '+num+'/'+den+'.')}
+  if(i===1){if(j===0)return F('Calculer '+a+'/'+d+' + '+b+'/'+(d*k)+'.',a*k+b,d*k,'Multiplier les deux termes de la première fraction par '+k+'.');if(j===1)return F('Calculer 1 − '+a+'/'+(a+k)+'.',k,a+k,'Écrire 1 = '+(a+k)+'/'+(a+k)+'.');return F('Calculer '+a+'/'+d+' − '+b+'/'+d+' + '+c+'/'+d+'.',a-b+c,d,'Le dénominateur est commun.')}
+  if(i===2){if(j===0)return F('Calculer '+s*a+' × '+b+'/'+d+'.',s*a*b,d,'Écrire l’entier sur 1.');if(j===1)return F('Calculer ('+(-a)+'/'+b+') × ('+(-c)+'/'+d+').',a*c,b*d,'Le produit de deux nombres négatifs est positif.');return F('Calculer les '+a+'/'+(a+k)+' de '+b+'/'+d+' litre.',a*b,(a+k)*d,'Prendre une fraction d’une quantité revient à multiplier.')}
+  if(j===0)return F('Calculer '+a+'/'+b+' ÷ '+d+'.',a,b*d,'Multiplier par 1/'+d+'.');if(j===1)return F('Calculer '+a+' ÷ '+b+'/'+d+' (le diviseur est la fraction '+b+'/'+d+').',a*d,b,'Multiplier par '+d+'/'+b+'.');return F('Calculer ('+(-a)+'/'+b+') ÷ ('+(-c)+'/'+d+').',a*d,b*c,'Multiplier par l’inverse du second nombre négatif.')
+ }
+ if(w===1){
+  let [u,v,h]=pick([[3,4,5],[5,12,13],[8,15,17],[7,24,25]]).map(x=>x*k);
+  if(i===0){if(j===0)return N('Un rectangle mesure '+u+' m sur '+v+' m. Calculer sa diagonale en m.',h,'d² = '+u+'² + '+v+'².','Diagonale (m)');if(j===1)return N('Une tour verticale de '+u+' m est reliée par un câble à un point du sol horizontal situé à '+v+' m de son pied. Calculer la longueur du câble.',h,'Le câble est l’hypoténuse.','Longueur (m)');return N('Deux chemins perpendiculaires mesurent '+a+' m et '+d+' m. Calculer la distance directe entre leurs extrémités, au dixième.',rnd(Math.hypot(a,d)),'d² = '+a+'² + '+d+'².','Distance (m)')}
+  if(i===1){if(j===0)return N('Un rectangle a une diagonale de '+h+' cm et une largeur de '+u+' cm. Calculer sa longueur.',v,'L² = '+h+'² − '+u+'².','Longueur (cm)');if(j===1)return N('Une échelle de '+h+' m repose contre un mur vertical. Son pied est à '+v+' m du mur, sur un sol horizontal. Calculer la hauteur atteinte.',u,'Hauteur² = '+h+'² − '+v+'².','Hauteur (m)');return N('Un triangle DEF est rectangle en E. DF = '+h+' cm, EF = '+v+' cm. Calculer DE.',u,'DE² = DF² − EF².','DE (cm)')}
+  let H=(j===0||j===2&&i===3)?h:h+1,yes=H===h;
+  if(j===0)return Y('Un triangle de côtés '+v+', '+h+' et '+u+' cm est-il rectangle ?',true,h+'² = '+v+'² + '+u+'².');
+  if(j===1)return Y('Un constructeur a mesuré les trois côtés d’un triangle : '+u+', '+v+' et '+H+' m. Peut-il affirmer que le triangle est rectangle ?',yes,'Comparer '+H*H+' et '+(u*u+v*v)+'.');
+  return C('Le plus grand côté d’un triangle mesure '+H+' cm ; les autres mesurent '+u+' et '+v+' cm. Calculer la différence entre le carré du plus grand côté et la somme des deux autres carrés.',[H*H-u*u-v*v],'Une différence nulle caractérise un triangle rectangle.',['Différence (cm²)'])
+ }
+ if(w===2){
+  if(i===0){if(j===0)return N('D ∈ [AB], E ∈ [AC], (DE) ∥ (BC). AD = '+a+', DB = '+a*(k-1)+', DE = '+b+' cm. Calculer BC.',b*k,'AB = AD + DB ; BC/DE = AB/AD.','BC (cm)',thal(false));if(j===1)return N('D ∈ [AB], E ∈ [AC], (DE) ∥ (BC). AB = '+a*k+', AD = '+a+', AC = '+b*k+' cm. Calculer AE.',b,'AE/AC = AD/AB.','AE (cm)',thal(false));return N('Deux triangles ABC et ADE ont D sur [AB], E sur [AC] et (DE) ∥ (BC). AE = '+b+', AC = '+b*k+', AB = '+a*k+' cm. Calculer AD.',a,'AD/AB = AE/AC.','AD (cm)',thal(false))}
+  if(i===1){const pre='A, D, B et C, D, E sont alignés dans cet ordre. (AC) ∥ (BE). ';if(j===0)return N(pre+'AD = '+a+', DB = '+a*k+', BE = '+b*k+' cm. Calculer AC.',b,'AC/BE = AD/DB.','AC (cm)',thal(true));if(j===1)return N(pre+'DC = '+b+', DE = '+b*k+', DB = '+a*k+' cm. Calculer AD.',a,'AD/DB = DC/DE.','AD (cm)',thal(true));return N(pre+'AD = '+a+', DB = '+a*k+', DE = '+b*k+' cm. Calculer DC.',b,'DC/DE = AD/DB.','DC (cm)',thal(true))}
+  let yes=j===0?i===3:j===1?i===2:pick([true,false]),B=b*k+(yes?0:1);
+  if(j===0)return Y('D ∈ [AB], E ∈ [AC]. AD = '+a+', DB = '+a*(k-1)+', AE = '+b+', AC = '+B+' cm. Les droites (DE) et (BC) sont-elles parallèles ?',yes,'AB = '+a*k+' ; comparer AD/AB et AE/AC.');
+  if(j===1)return Y('A, D, B et C, D, E sont alignés dans cet ordre. AD = '+a+', DB = '+a*k+', DC = '+b+', DE = '+B+' cm. Les droites (AC) et (BE) sont-elles parallèles ?',yes,'Comparer AD/DB et DC/DE.');
+  return C('D ∈ [AB], E ∈ [AC]. AD = '+a+', AB = '+a*k+', AE = '+b+', AC = '+B+' cm. Calculer la différence AD × AC − AE × AB.',[a*B-b*a*k],'Une différence nulle signifie que les rapports sont égaux.',['Différence'])
+ }
+ if(w===3){let angle=pick([25,30,35,40,45,50,55,60,65]),r=angle*Math.PI/180,n=rand(7,22),p=rand(2,n-1),prefix='ABC est rectangle en A. ';
+  if(i===0){if(j===0)return N(prefix+'BC = '+n+' cm, angle ABC = '+angle+'°. Calculer AC au dixième.',rnd(n*Math.sin(r)),'AC = BC × sin(ABC).','AC (cm)');if(j===1)return N('Une échelle de '+n+' m fait un angle de '+angle+'° avec le sol horizontal. Calculer la hauteur atteinte au dixième.',rnd(n*Math.sin(r)),'La hauteur est opposée à l’angle.','Hauteur (m)');return N(prefix+'AC = '+n+' cm, angle ABC = '+angle+'°. Calculer BC au dixième.',rnd(n/Math.sin(r)),'BC = AC / sin(ABC).','BC (cm)')}
+  if(i===1){if(j===0)return N(prefix+'BC = '+n+' cm, angle ABC = '+angle+'°. Calculer AB au dixième.',rnd(n*Math.cos(r)),'AB = BC × cos(ABC).','AB (cm)');if(j===1)return N('Une rampe de '+n+' m fait un angle de '+angle+'° avec le sol horizontal. Calculer sa projection horizontale au dixième.',rnd(n*Math.cos(r)),'La projection est adjacente à l’angle.','Distance (m)');return N(prefix+'AB = '+n+' cm, angle ABC = '+angle+'°. Calculer BC au dixième.',rnd(n/Math.cos(r)),'BC = AB / cos(ABC).','BC (cm)')}
+  if(i===2){if(j===0)return N(prefix+'AB = '+n+' cm, angle ABC = '+angle+'°. Calculer AC au dixième.',rnd(n*Math.tan(r)),'AC = AB × tan(ABC).','AC (cm)');if(j===1)return N('À '+n+' m du pied d’une tour verticale, on vise son sommet sous un angle de '+angle+'° par rapport à l’horizontale (visée depuis le sol). Calculer la hauteur au dixième.',rnd(n*Math.tan(r)),'La hauteur vaut distance × tangente.','Hauteur (m)');return N(prefix+'AC = '+n+' cm, angle ABC = '+angle+'°. Calculer AB au dixième.',rnd(n/Math.tan(r)),'AB = AC / tan(ABC).','AB (cm)')}
+  let trig=j===0?'sin':j===1?'cos':'tan',value=j===0?Math.asin(p/n):j===1?Math.acos(p/n):Math.atan(p/n);
+  return N(prefix+(j===0?'AC = '+p+', BC = '+n:j===1?'AB = '+p+', BC = '+n:'AC = '+p+', AB = '+n)+' cm. Calculer l’angle ABC au dixième de degré.',rnd(value*180/Math.PI),'angle ABC = '+trig+'⁻¹('+p+'/'+n+').','Angle (°)')
+ }
+ if(w===4){let A=i===0?1:a,B=s*b,Cc=i<2?1:c,D=t*d,m=i===3?k:1,base=[A*Cc,A*D+B*Cc,B*D];if(j===0)return C('Développer et réduire '+bin(A,B)+bin(Cc,D)+' + '+k+'x. Donner les trois coefficients.',[base[0],base[1]+k,base[2]],'Développer puis ajouter '+k+'x.');if(j===1)return C('Développer et réduire −'+m+bin(A,B)+bin(Cc,D)+'. Donner les trois coefficients.',base.map(v=>-m*v),'Développer puis multiplier tous les termes par −'+m+'.');return C('Développer et réduire '+bin(A,B)+bin(Cc,D)+' − '+bin(A,-B)+bin(Cc,D)+'. Donner les trois coefficients.',[0,2*B*Cc,2*B*D],'Développer les deux produits puis soustraire chacun des termes.')}
+ let A=i===0?1:a,B=b,sg=i===1?-1:1;
+ if(i<2){if(j===0)return C('Développer et réduire '+bin(A,sg*B)+'² + '+k+'x. Donner les trois coefficients.',[A*A,2*A*sg*B+k,B*B],'Utiliser le carré puis ajouter '+k+'x.');if(j===1)return C('Développer et réduire −'+bin(A,sg*B)+'². Donner les trois coefficients.',[-A*A,-2*A*sg*B,-B*B],'Changer le signe de chaque terme après développement.');return C('Développer et réduire '+bin(A,sg*B)+'² − '+A*A+'x². Donner les trois coefficients.',[0,2*A*sg*B,B*B],'Les termes en x² s’annulent.')}
+ if(i===2){if(j===0)return C('Développer et réduire '+bin(A,B)+bin(A,-B)+' − '+k+'x. Donner les trois coefficients.',[A*A,-k,-B*B],'Utiliser la différence de deux carrés.');if(j===1)return C('Développer et réduire '+k+bin(A,B)+bin(A,-B)+'. Donner les trois coefficients.',[k*A*A,0,-k*B*B],'Multiplier la différence de deux carrés par '+k+'.');return C('Développer et réduire '+bin(A,B)+bin(A,-B)+' − '+A*A+'x². Donner les trois coefficients.',[0,0,-B*B],'Les termes en x² s’annulent.')}
+ if(j===0)return C('Factoriser x² + '+2*B+'x + '+B*B+'. Compléter (x + b)² avec b positif.',[B],'Carré d’une somme.',['b']);
+ if(j===1)return C('Factoriser x² − '+2*B+'x + '+B*B+'. Compléter (x − b)² avec b positif.',[B],'Carré d’une différence.',['b']);
+ return C('Factoriser '+A*A+'x² + '+2*A*B+'x + '+B*B+'. Compléter (ax + b)² avec a et b positifs.',[A,B],'Carré d’une somme.',['a','b'])
+}
+make=function(w,i){let j=rand(0,4);return j<2?earlierMake(w,i):extended(w,i,j-2)};
+
 function normalize(v){return String(v??'').trim().replace(/−/g,'-').replace(/,/g,'.').replace(/\s/g,'').toLowerCase()}
-function correct(Q,ans){if(!Array.isArray(ans)||ans.length!==Q.expected.length)return false;return Q.expected.every((e,i)=>{const a=normalize(ans[i]);if(!a)return false;if(Q.kind==='yn')return a===e;if(Q.kind==='frac'){const m=a.match(/^([+-]?\d+)(?:\/([1-9]\d*))?$/);if(!m)return false;const n=Number(m[1]),d=Number(m[2]||1);return Number.isSafeInteger(n)&&Number.isSafeInteger(d)&&gcd(n,d)===1&&fr(n,d)===String(e)}return /^[-+]?\d+(?:\.\d+)?$/.test(a)&&Math.abs(Number(a)-Number(e))<1e-8})}
+function correct(Q,ans){if(!Array.isArray(Q.expected)||!Array.isArray(ans)||ans.length!==Q.expected.length)return false;return Q.expected.every((e,i)=>{const a=normalize(ans[i]);if(!a)return false;if(Q.kind==='yn')return a===e;if(Q.kind==='frac'){const m=a.match(/^([+-]?\d+)(?:\/([1-9]\d*))?$/);if(!m)return false;const n=Number(m[1]),d=Number(m[2]||1);return Number.isSafeInteger(n)&&Number.isSafeInteger(d)&&gcd(n,d)===1&&fr(n,d)===String(e)}return /^[-+]?\d+(?:\.\d+)?$/.test(a)&&Math.abs(Number(a)-Number(e))<1e-8})}
 function expected(Q){return Q.expected.join(' ; ').replace(/\./g,',')}
 function build(w){return Array.from({length:4},(_,i)=>({...make(w,i),w,i}))}
 function makeHomework(){return worlds.flatMap((_,w)=>build(w))}
