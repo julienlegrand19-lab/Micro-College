@@ -21,6 +21,19 @@ try{
   await click('mentorContinue');
  }
  await page.setViewportSize({width:390,height:844});
+ await page.setViewportSize({width:320,height:640});await click('castleOpen');
+ assert((await page.locator('.castle-counters').textContent()).includes('1/7'));
+ assert.equal(await page.locator('.castle-buildings article').count(),7);
+ assert(await page.locator('[data-cosmetic="outfit"][data-color="#c4a164"]').isDisabled());
+ await page.locator('[data-cosmetic="skin"][data-color="#80543f"]').click();
+ await page.locator('[data-cosmetic="hair"][data-color="#c5c6ce"]').click();
+ await page.locator('[data-cosmetic="outfit"][data-color="#496c90"]').click();
+ assert(await page.evaluate(()=>{let d=document.querySelector('.castle-dialog');return d.scrollWidth<=d.clientWidth+1}),'castle overflow');
+ await click('castleClose');await page.reload();await click('castleOpen');
+ assert.equal(await page.locator('[data-cosmetic="skin"][data-color="#80543f"]').getAttribute('aria-pressed'),'true');
+ assert.equal(await page.locator('[data-cosmetic="outfit"][data-color="#496c90"]').getAttribute('aria-pressed'),'true');
+ await click('castleDefault');await click('castleClose');await page.setViewportSize({width:390,height:844});
+
  // The personal notebook is independent of the graded assignment.
  await click('personalOpen');assert((await page.locator('.personal-stats').textContent()).includes('0/24'));
  await page.locator('[data-personal-length="3"]').click();assert.equal(await page.locator('.personal-plan>div').count(),3);
