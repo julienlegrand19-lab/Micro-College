@@ -19,12 +19,12 @@ try{
   await page.locator('[data-dungeon="'+d.id+'"]').click();
   for(let i=0;i<3;i++){
    await click('navigate');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Tu es arrivé.');
-   await click('interact');await page.locator('dialog[open]').waitFor();let m=E.puzzle(d.id,i,42);
+   await click('interact');await page.locator('dialog[open]').waitFor();let seed=await page.evaluate(()=>JSON.parse(localStorage.getItem('astreon-dungeons-v1')).seed);let m=E.puzzle(d.id,i,seed);
    await click('check');assert((await page.locator('#feedback').textContent()).includes('bloqué'));
    if(m.kind==='dose'){for(let j=0;j<3;j++)for(let n=0;n<m.expected[j];n++)await page.locator('[data-dose="'+j+'"][data-delta="1"]').click()}
    else if(m.max)await page.locator('#setting').evaluate((e,v)=>{e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}))},m.expected[0]);
    else for(let j=0;j<m.expected.length;j++)await page.locator('#v'+j).fill(String(m.expected[j]));
-   await click('check');assert((await page.locator('#feedback').textContent()).includes('Mécanisme activé'));await click('closeDialog');
+   await click('check');assert((await page.locator('#feedback').textContent()).includes('Mécanisme activé'),d.id+' salle '+i+' seed '+seed);await click('closeDialog');
    if(i===1){await page.reload();await page.locator('[data-dungeon="'+d.id+'"]').click()}
    await click('navigate');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Tu es arrivé.');await click('interact');
    if(i===2){await page.locator('#exitRelic').waitFor();await click('exitRelic')}
