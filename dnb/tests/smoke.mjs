@@ -24,6 +24,17 @@ try{
 
  assert.equal(await page.locator('.atlas-node').count(),6);
  assert.equal(await page.locator('[data-mentor]').count(),6);
+ assert.equal(await page.locator('.scratch-territory').count(),1);
+ await page.locator('.scratch-link').click();await page.locator('#learn').waitFor();
+ await click('learn');assert.equal(await page.locator('[data-lesson]').count(),6);await click('home');assert.equal(await page.locator('[data-room]').count(),12);
+ await page.locator('[data-room="1"]').click();await click('run');assert((await page.locator('#feedback').textContent()).includes('Complète'));
+ await page.locator('[data-hole="r"]').selectOption('4');await click('run');assert((await page.locator('#trace').textContent()).includes('avancer 55'));await click('check');assert((await page.locator('#feedback').textContent()).includes('réussi'));
+ await click('home');assert((await page.locator('[data-room="1"]').textContent()).includes('✓'));
+ await page.reload();assert((await page.locator('[data-room="1"]').textContent()).includes('✓'));
+ await page.locator('[data-room="3"]').click();await page.locator('#response').fill('17');await click('check');assert((await page.locator('#feedback').textContent()).includes('réussi'));
+ await page.goto(base);await page.locator('#hw').waitFor();
+ await page.locator('[data-mentor="3"]').click();await page.locator('[data-mentor-tab="example"]').click();await page.locator('[data-geometry="BC"]').click();assert((await page.locator('.geometry-feedback').textContent()).includes('hypoténuse'));await click('mentorContinue');
+
  await page.locator('[data-mentor="1"]').click();await page.getByRole('dialog',{name:'Rencontre avec le maître'}).waitFor();
  await page.locator('[data-mentor-tab="lesson"]').click();assert((await page.locator('#mentorContent').textContent()).includes('BC² = AB² + AC²'));await click('mentorNext');assert((await page.locator('#mentorContent').textContent()).includes('AC² = BC² − AB²'));
  await page.locator('[data-mentor-tab="proof"]').click();assert.equal(await page.locator('[data-mentor-proof]').count(),3);await page.locator('[data-mentor-proof="1"]').click();await page.locator('#proofCheck').waitFor();await click('writingBack');await page.locator('#mentorContinue').waitFor();await click('mentorContinue');
