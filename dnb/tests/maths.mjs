@@ -27,12 +27,41 @@ function fractionValue(t){let p=t.replace(/−/g,'-');
  // A division glyph between fractions has lower binding than fraction bars.
  return expression(m[1].replace(/([+-]?\d+\/\d+)/g,'($1)'))
 }
+
+// Recompute from the question text, not the answer key or generation parameters.
+function geometry(Q,w,slot,variant){
+ let t=Q.t, n=[...t.matchAll(/\d+/g)].map(m=>Number(m[0])), sides=Object.fromEntries([...t.matchAll(/\b([A-Z]{2}) = (\d+)/g)].map(m=>[m[1],+m[2]])), expected;
+ const round=(v)=>Math.round(v*10)/10;
+ if(w===1){
+  if(slot===0){assert.equal(n.length,2,t);let a=Math.sqrt(n[0]**2+n[1]**2);expected=[/dixième/.test(t)?round(a):a]}
+  else if(slot===1){assert.equal(n.length,2,t);expected=[Math.sqrt(n[0]**2-n[1]**2)]}
+  else {assert.equal(n.length,3,t);let [a,b,c]=n.sort((a,b)=>a-b);assert(a+b>c,'Triangle impossible: '+t);let sum=a*a+b*b,large=c*c;expected=Q.kind==='yn'?[large===sum?'oui':'non']:Q.labels.length===2?[large,sum]:[large-sum]}
+ }else if(w===2){
+  if(sides.AB===undefined&&sides.AD!==undefined&&sides.DB!==undefined&&!t.includes('A, D, B et C, D, E'))sides.AB=sides.AD+sides.DB;
+  let pairs=t.includes('A, D, B et C, D, E')?[['AD','DB'],['DC','DE'],['AC','BE']]:[['AD','AB'],['AE','AC'],['DE','BC']];
+  if(slot<2){let target=Q.labels[0].slice(0,2),pair=pairs.find(p=>p.includes(target)),known=pairs.find(p=>p.every(k=>sides[k]!==undefined));assert(pair&&known,t);let ratio=sides[known[0]]/sides[known[1]];expected=[target===pair[0]?sides[pair[1]]*ratio:sides[pair[0]]/ratio]}
+  else{let [a,b]=pairs;let left=sides[a[0]]*sides[b[1]],right=sides[b[0]]*sides[a[1]];expected=Q.kind==='yn'?[left===right?'oui':'non']:Q.labels.length===2?[left,right]:[left-right]}
+ }else{
+  let angleName=t.includes('angle ACB')?'ACB':t.includes('angle ABC')?'ABC':null;
+  let opp=angleName==='ABC'?'AC':'AB',adj=angleName==='ABC'?'AB':'AC',hyp='BC';
+  if(slot===3){assert(angleName,t);let a=sides[opp],b=sides[adj],c=sides[hyp];let radians=a!==undefined&&b!==undefined?Math.atan2(a,b):a!==undefined?Math.asin(a/c):Math.acos(b/c);expected=[round(radians*180/Math.PI)]}
+  else{let angle=Number(t.match(/(\d+)°/)?.[1]),r=angle*Math.PI/180;assert(Number.isFinite(r),t);let target=Q.labels[0].slice(0,2),val;
+   if(!angleName){assert.equal(n.length,2,t);val=n[0]*[Math.sin,Math.cos,Math.tan][slot](r)}
+   else {let ratios={[opp]:Math.sin(r),[adj]:Math.cos(r),[hyp]:1};let known=Object.keys(sides)[0];assert(known&&ratios[target]!==undefined,t);val=sides[known]/ratios[known]*ratios[target]}
+   expected=[round(val)]
+  }
+ }
+ assert.equal(expected.length,Q.expected.length,t);
+ expected.forEach((v,i)=>typeof v==='string'?assert.equal(Q.expected[i],v,t):approx(Number(Q.expected[i]),v,t));
+}
+
 let total=0,independent=0;
 for(let w=0;w<6;w++)for(let slot=0;slot<4;slot++)for(let variant=0;variant<5;variant++)for(let n=0;n<100;n++){
  let Q=variants[variant](w,slot);assert(Q.t&&Q.solution&&Q.labels.length===Q.expected.length);assert(correct(Q,Q.expected.map(String)));assert(!correct(Q,Q.expected.map(()=>'')));total++;
+ if(w>=1&&w<=3){geometry(Q,w,slot,variant);independent++}
  if(w===0){approx(fractionValue(Q.t),expression(String(Q.expected[0])),Q.t);independent++}
  if(w===4||w===5&&slot<3){let m=Q.t.match(/^Développer(?: et réduire)? (.*?)\./);assert(m,Q.t);let [a,b,c]=Q.expected;for(let x of [-3,-1,0,2,5])approx(expression(m[1],x),a*x*x+b*x+c,Q.t);independent++}
  if(w===5&&slot===3){let m=Q.t.match(/^Factoriser (.*?)\./);assert(m,Q.t);let [a,b]=Q.expected;if(b===undefined){b=a;a=1}let same=Q.t.includes('² avec');for(let x of [-3,0,2,5]){let value=same?(Q.t.includes('(x − b)')?(a*x-b)**2:(a*x+b)**2):(a*x+b)*(a*x-b);approx(expression(m[1],x),value,Q.t)}independent++}
 }
 assert.equal(worlds.reduce((n,w)=>n+w[3],0),20);
-console.log('PASS: '+total+' questions; '+independent+' vérifications indépendantes fractions/algèbre; banques identiques.');
+console.log('PASS: '+total+' questions; '+independent+' vérifications indépendantes sur les six chapitres; banques identiques.');
