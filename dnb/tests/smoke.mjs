@@ -26,7 +26,7 @@ try{
  assert.equal(await page.locator('[data-mentor]').count(),6);
  assert.equal(await page.locator('.scratch-territory').count(),1);
  await page.locator('.scratch-link').click();await page.locator('#learn').waitFor();
- await click('learn');assert.equal(await page.locator('[data-lesson]').count(),6);await click('home');assert.equal(await page.locator('[data-room]').count(),16);
+ await click('learn');assert.equal(await page.locator('[data-lesson]').count(),6);await click('adaListen');assert((await page.locator('#adaVoiceStatus').textContent()).length>0);await click('adaStop');await click('home');assert.equal(await page.locator('[data-room]').count(),16);
  await page.locator('[data-route="2"]').click();assert.equal(await page.locator('[data-room]').count(),6);
  await page.locator('[data-room="12"]').click();await page.locator('#response').fill('26');await click('check');assert((await page.locator('#feedback').textContent()).includes('réussi'));await click('home');await page.locator('[data-route="-1"]').click();
  await page.locator('[data-room="1"]').click();await click('run');assert((await page.locator('#feedback').textContent()).includes('Complète'));
@@ -36,10 +36,37 @@ try{
  await page.locator('[data-room="3"]').click();await page.locator('#response').fill('17');await click('check');assert((await page.locator('#feedback').textContent()).includes('réussi'));
  await page.goto(base);await page.locator('#hw').waitFor();
  assert.equal(await page.locator('[data-path-world]').count(),6);
+ assert.equal(await page.locator('[data-boss-world]').count(),6);
+ await page.locator('[data-boss-world="1"]').click();await page.locator('#ped0').waitFor();
+ // Answer all phases correctly, solving the actual generated Pythagoras problems.
+ let concept=(await page.locator('.pedagogic-boss .question').textContent()).trim();
+ await page.locator('#ped0').selectOption({label:concept.startsWith('Dans un triangle')?'le côté opposé à l’angle droit':'la contraposée'});
+ await click('pedCheck');assert.equal(await page.locator('.ped-health .cleared').count(),1);await click('pedNext');
+ let task=await page.locator('.pedagogic-boss .question').textContent(),n=[...task.matchAll(/\d+/g)].map(m=>Number(m[0]));
+ let labels=await page.locator('.pedagogic-boss .guided-step label').allTextContents();
+ if(task.startsWith('ABC est rectangle')){
+   let add=task.includes('Calculer BC'),target=add?'BC':'AC';
+   await page.locator('#ped0').selectOption({label:'Théorème de Pythagore'});
+   await page.locator('#ped1').selectOption({label:'BC² = AB² + AC²'});
+   await page.locator('#ped2').selectOption({label:n[0]+'² '+(add?'+':'−')+' '+n[1]+'²'});
+   await page.locator('#ped3').fill(String(Math.sqrt(n[0]**2+(add?1:-1)*n[1]**2)));
+ }else{
+   n.sort((a,b)=>a-b);let [u,v,z]=n,yes=z*z===u*u+v*v;
+   await page.locator('#ped0').fill(String(z*z));await page.locator('#ped1').fill(String(u*u+v*v));
+   await page.locator('#ped2').selectOption({label:yes?'Réciproque de Pythagore':'Contraposée de Pythagore'});
+   await page.locator('#ped3').selectOption({label:yes?'Le triangle est rectangle.':'Le triangle n’est pas rectangle.'});
+ }
+ await click('pedCheck');assert.equal(await page.locator('.ped-health .cleared').count(),2);await click('pedNext');
+ task=await page.locator('.pedagogic-boss .question').textContent();n=[...task.matchAll(/\d+/g)].map(m=>Number(m[0]));
+ if(task.startsWith('Une cour')){let [a,b,c]=n,d2=a*a+b*b+c*c;await page.locator('#ped0').fill(String(Math.sqrt(a*a+b*b)));await page.locator('#ped1').fill(String(d2));await page.locator('#ped2').fill(String(Math.sqrt(d2)))}
+ else {let [a,b,c]=n;for(let [i,v] of [c*c,a*a+b*b,a*b/2,a+b+c].entries())await page.locator('#ped'+i).fill(String(v))}
+ await click('pedCheck');assert.equal(await page.locator('.ped-health .cleared').count(),3);await click('pedNext');assert((await page.locator('.boss-finish').textContent()).includes('Gardien vaincu'));await click('bossClose');
+ assert(await page.evaluate(()=>JSON.parse(localStorage.getItem('gardiens-dnb-v1')).pedBoss[1].won));
+
  await page.locator('[data-path-world="1"]').click();assert.equal(await page.locator('[data-path]').count(),3);
  await page.locator('[data-path="0"]').click();assert.equal(await page.locator('.guided-step').count(),4);await click('pathHint');assert((await page.locator('#pathFeedback').textContent()).length>15);await click('pathMenu');
  await page.locator('[data-path="2"]').click();assert((await page.locator('.paths-dialog').textContent()).includes('Le câble du rempart'));await page.locator('#path0').fill('0');await page.locator('#path1').fill('0');await page.locator('#path2').fill('0');await click('pathCheck');assert(await page.locator('#pathNext').isEnabled());await click('pathNext');assert((await page.locator('.paths-dialog').textContent()).includes('Le passage du colosse'));await click('pathMenu');await click('pathClose');
- await page.locator('[data-mentor="3"]').click();await page.locator('[data-mentor-tab="example"]').click();await page.locator('[data-geometry="BC"]').click();assert((await page.locator('.geometry-feedback').textContent()).includes('hypoténuse'));await click('mentorContinue');
+ await page.locator('[data-mentor="3"]').click();await page.locator('[data-mentor-tab="example"]').click();await click('mentorListen');assert((await page.locator('#mentorVoiceStatus').textContent()).length>0);await click('mentorSilence');await page.locator('[data-geometry="BC"]').click();assert((await page.locator('.geometry-feedback').textContent()).includes('hypoténuse'));await click('mentorContinue');
 
  await page.locator('[data-mentor="1"]').click();await page.getByRole('dialog',{name:'Rencontre avec le maître'}).waitFor();
  await page.locator('[data-mentor-tab="lesson"]').click();assert((await page.locator('#mentorContent').textContent()).includes('BC² = AB² + AC²'));await click('mentorNext');assert((await page.locator('#mentorContent').textContent()).includes('AC² = BC² − AB²'));
