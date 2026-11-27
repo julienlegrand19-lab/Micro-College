@@ -1,0 +1,47 @@
+
+import {chromium} from 'playwright';
+import assert from 'node:assert/strict';
+const base='http://127.0.0.1:8765/dnb/';
+const browser=await chromium.launch({headless:true});
+const errors=[];
+const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2,reducedMotion:'reduce'});
+const page=await context.newPage();
+page.on('pageerror',e=>errors.push(String(e)));
+async function click(id){await page.locator('#'+id).click()}
+async function optional(id){let e=page.locator('#'+id);if(await e.count()&&await e.isVisible())await e.click()}
+async function question(){await optional('cutnext');await optional('direct');await page.locator('.question').waitFor()}
+try{
+ await page.goto(base);await page.locator('#hw').waitFor();
+ assert.equal(await page.locator('.atlas-node').count(),6);
+ assert.equal(await page.locator('[data-focus]').count(),6);
+ await page.locator('[data-focus="0"]').click();await page.locator('#focusCheck').waitFor();await click('studyClose');
+ await click('mockOpen');await click('beginMock');assert.equal(await page.locator('[data-mock]').count(),24);await page.locator('#mockTime').waitFor();await page.locator('dialog[open]').evaluate(d=>d.close());
+ await click('hw');await optional('prologueSkip');await page.locator('#student').fill('TEST-E01');await click('start');
+ await page.locator('#walk').waitFor();assert.equal(await page.locator('#secret').count(),1);
+ await click('direct');await page.locator('.question').waitFor();
+ let attempt=await page.evaluate(()=>JSON.parse(localStorage.getItem('gardiens-dnb-v1')).hw);
+ assert.equal(attempt.qs.length,24);
+ for(let i=0;i<24;i++){
+   await question();
+   let Q=attempt.qs[i];
+   if(Q.kind==='yn')await page.locator('[data-yn="'+Q.expected[0]+'"]').click();
+   else for(let j=0;j<Q.expected.length;j++)await page.locator('#a'+j).fill(String(Q.expected[j]));
+   if(i===4){await page.reload();await click('hw');await question();let saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('gardiens-dnb-v1')).hw);assert.equal(saved.at,i);assert.deepEqual(saved.answers[i],Q.expected.map(String))}
+   await click('next');
+ }
+ await optional('finalContinue');await click('submit');await page.locator('#exportJson').waitFor();assert.equal((await page.locator('.score').textContent()).trim(),'20/20');
+ let final=await page.evaluate(()=>JSON.parse(localStorage.getItem('gardiens-dnb-v1')).hw);assert(final.finished);
+ let report={format:'astreon-dnb-report-v1',student:final.student,submitted:final.submitted,points:[4,3,3,4,3,3],total:20,questions:final.qs.map((Q,j)=>({chapter:Q.w,slot:Q.i,text:Q.t,kind:Q.kind,expected:Q.expected,response:final.answers[j]}))};
+ const desktop=await browser.newPage({viewport:{width:1280,height:800},reducedMotion:'reduce'});desktop.on('pageerror',e=>errors.push(String(e)));await desktop.goto(base+'professeur.html');await desktop.locator('#files').setInputFiles({name:'test.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(report))});await desktop.waitForFunction(()=>document.querySelector('#n').textContent==='1');assert.equal((await desktop.locator('#avg').textContent()).trim(),'20');await desktop.close();
+ const online=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});online.on('pageerror',e=>errors.push(String(e)));
+ let saved=final.qs.map(()=>null),position=0;
+ const publicAttempt=finished=>({student:'test-e02',qs:finished?final.qs:final.qs.map(({t,kind,labels,diagram,w,i})=>({t,kind,labels,diagram,w,i})),answers:saved,at:position,finished,created:final.created,submitted:finished?new Date().toISOString():null});
+ await online.route('https://micro-college.julienlegrand19.workers.dev/**',async route=>{
+  let req=route.request(),path=new URL(req.url()).pathname;const headers={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET,POST,PUT,OPTIONS','Access-Control-Allow-Headers':'Authorization,Content-Type','Content-Type':'application/json'};
+  if(req.method()==='OPTIONS')return route.fulfill({status:200,headers,body:'{}'});
+  let result={ok:true};if(path==='/health')result={ok:true,configured:true,dnb:1};else if(path==='/student/login')result={token:'a'.repeat(64),id:'test-e02',name:'TEST-E02'};else if(path==='/student/dnb/start')result=publicAttempt(false);else if(path==='/student/dnb/save'){let p=req.postDataJSON();saved=p.answers;position=p.at}else if(path==='/student/dnb/submit'){let p=req.postDataJSON();saved=p.answers;position=p.at;result=publicAttempt(true)}else if(path!=='/student/logout')throw Error('Unexpected mocked route '+path);await route.fulfill({status:200,headers,body:JSON.stringify(result)})
+ });
+ await online.goto(base+'?school=1');await online.locator('#hw').click();await online.locator('#onlineName').fill('TEST-E02');await online.locator('#onlinePass').fill('test-only');await online.locator('#onlineStart').click();await online.locator('#direct').click();await online.locator('.question').waitFor();let Q=final.qs[0];await online.locator('#a0').fill(String(Q.expected[0]));await online.locator('#finish').click();await online.locator('#submit').click();await online.getByText('Remise confirmée par le serveur', {exact:false}).waitFor();assert.equal(saved[0][0],String(Q.expected[0]));await online.close();
+ assert.deepEqual(errors,[]);
+ console.log('PASS: mobile local campaign, reload, perfect grading, teacher import, mocked online submission, study and mock entry');
+}finally{await browser.close()}
