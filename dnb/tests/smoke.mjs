@@ -13,6 +13,12 @@ async function question(){await optional('cutnext');await optional('direct');awa
 try{
  await page.goto(base);await page.locator('#hw').waitFor();
  assert.equal(await page.locator('.atlas-node').count(),6);
+ assert.equal(await page.locator('[data-mentor]').count(),6);
+ await page.locator('[data-mentor="1"]').click();await page.getByRole('dialog',{name:'Rencontre avec le maître'}).waitFor();
+ await page.locator('[data-mentor-tab="lesson"]').click();assert((await page.locator('#mentorContent').textContent()).includes('BC² = AB² + AC²'));await click('mentorNext');assert((await page.locator('#mentorContent').textContent()).includes('AC² = BC² − AB²'));
+ await page.locator('[data-mentor-tab="proof"]').click();assert.equal(await page.locator('[data-mentor-proof]').count(),3);await page.locator('[data-mentor-proof="1"]').click();await page.locator('#proofCheck').waitFor();await click('writingBack');await page.locator('#mentorContinue').waitFor();await click('mentorContinue');
+ await page.locator('[data-world="1"]').click();await page.locator('#mentorContinue').waitFor();await click('mentorContinue');await page.locator('#walk').waitFor();await click('direct');await page.locator('#mentorHelp').waitFor();await click('mentorHelp');await click('mentorContinue');await click('leave');await page.locator('#hw').waitFor();
+
  assert.equal(await page.evaluate(()=>typeof AstreonArt?.hero==='function'&&typeof AstreonArt?.boss==='function'),true);
  // Exercise every new illustration on a real canvas, with actual rendering state.
  const painted=await page.evaluate(()=>{let canvas=document.createElement('canvas');canvas.width=400;canvas.height=400;let g=canvas.getContext('2d');let n=0;for(let character of ['knight','mage','ranger','scout'])for(let pose of ['idle','run','jump','cast','hurt']){g.clearRect(0,0,400,400);AstreonArt.hero(g,{character,pose,x:200,y:300,scale:3,time:1234});if(g.getImageData(0,0,400,400).data.some((v,i)=>i%4===3&&v>0))n++}for(let territory=0;territory<6;territory++)for(let attack of [false,true]){g.clearRect(0,0,400,400);AstreonArt.boss(g,{territory,attack,x:200,y:300,scale:3,time:1234});if(g.getImageData(0,0,400,400).data.some((v,i)=>i%4===3&&v>0))n++}return n});assert.equal(painted,32);
@@ -39,6 +45,7 @@ try{
  await page.keyboard.down('ArrowRight');try{await page.waitForFunction(()=>Number(document.querySelector('#routeProgress')?.value)>10)}finally{await page.keyboard.up('ArrowRight')}
  await page.locator('#jump').click();
  await click('direct');await page.locator('#app .question').waitFor();
+ assert.equal(await page.locator('#mentorHelp').count(),0);assert.equal(await page.locator('.mentor-dialog[open]').count(),0);
  let attempt=await page.evaluate(()=>JSON.parse(localStorage.getItem('gardiens-dnb-v1')).hw);
  assert.equal(attempt.qs.length,24);
  for(let i=0;i<24;i++){
