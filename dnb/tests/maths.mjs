@@ -5,7 +5,7 @@ const start=html.indexOf('const worlds='),end=html.indexOf('let session=null;');
 const source=html.slice(start,end);
 const bank=h=>h.slice(h.indexOf('function make(w,i)'),h.indexOf('function normalize(v)'));
 assert.equal(bank(html),bank(worker),'Les banques locale et serveur doivent être identiques');
-const {variants,correct,worlds,makeHomework}=new Function('localStorage',source+';return {variants:[baseMake,alternate,...[0,1,2].map(j=>(w,i)=>extended(w,i,j))],correct,worlds,makeHomework}')({getItem:()=>null,setItem:()=>{}});
+const {variants,correct,worlds,makeHomework,questionFraction}=new Function('localStorage',source+';return {variants:[baseMake,alternate,...[0,1,2].map(j=>(w,i)=>extended(w,i,j))],correct,worlds,makeHomework,questionFraction}')({getItem:()=>null,setItem:()=>{}});
 // Independent expression parser: no eval and no shared generation functions.
 function expression(input,x=0){
  let tokens=input.replace(/−/g,'-').replace(/²/g,'^2').replace(/×/g,'*').replace(/÷/g,'/').replace(/\s+/g,'').match(/\d+|x|[()+*/^\-]/g)||[];
@@ -65,7 +65,7 @@ for(let w=0;w<6;w++)for(let slot=0;slot<4;slot++)for(let variant=0;variant<5;var
 }
 // The new scored blueprint is invariant in task shape, even if numerical values change.
 const signature=qs=>qs.map(q=>[q.w,q.i,q.kind,q.labels.length].join(':')).join('|');
-const reference=signature(makeHomework());for(let n=0;n<1000;n++){let qs=makeHomework();assert.equal(signature(qs),reference);assert.equal(qs.reduce((s,q)=>s+(correct(q,q.expected.map(String))?worlds[q.w][3]/4:0),0),20)}
+const reference=signature(makeHomework());for(let n=0;n<100;n++){let qs=makeHomework();assert.equal(qs.filter(q=>q.kind==='proof').length,12);for(let q of qs.filter(q=>q.kind==='proof')){assert.equal(q.expected.length,4);for(let j=0;j<4;j++){if(q.options[j]){assert.equal(q.options[j].length,4);assert.equal(new Set(q.options[j]).size,4);assert(q.options[j].includes(q.expected[j]));}}let a=q.expected.map(String);a[0]='';assert.equal(questionFraction(q,a),.75);assert.equal(questionFraction(q,q.expected.map(String)),1)}}for(let n=0;n<1000;n++){let qs=makeHomework();assert.equal(signature(qs),reference);assert.equal(qs.reduce((s,q)=>s+(correct(q,q.expected.map(String))?worlds[q.w][3]/4:0),0),20)}
 assert.equal(html.match(/function makeHomework\(\)\{[^\n]+/)[0],worker.match(/function makeHomework\(\)\{[^\n]+/)[0]);
 console.log('PASS: 1000 devoirs, structure et barème invariants.');
 assert.equal(worlds.reduce((n,w)=>n+w[3],0),20);
