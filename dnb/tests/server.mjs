@@ -34,6 +34,11 @@ let final=await call('/student/dnb/submit','POST',{answers:keys,at:23,total:999}
 await call('/student/dnb/save','PUT',{answers:keys.map(()=>null),at:0},token,409);
 let duplicate=await call('/student/dnb/submit','POST',{answers:keys.map(()=>null),at:0},token);assert.equal(duplicate.result.total,20);
 let reports=(await call('/teacher/dnb/results','GET',undefined,admin)).reports;assert.equal(reports.length,1);assert.equal(reports[0].classroom,'3 LYRA');assert.equal(reports[0].total,20);
+let row2=db.prepare('SELECT * FROM dnb_attempts WHERE student_id=?').get(b.student),qs2=JSON.parse(row2.questions),keys2=qs2.map(q=>q.expected.map(String));
+assert.equal(qs2.filter(q=>q.kind==='proof').length,12);
+assert(b.qs.filter(q=>q.kind==='proof').every(q=>q.options.length===4&&!('expected'in q)));
+let idx=qs2.findIndex(q=>q.kind==='proof');keys2[idx][0]='';let partial=await call('/student/dnb/submit','POST',{answers:keys2,at:23},t2);assert.equal(partial.result.total,20-3/16);
+
 await call('/student/relatifs','PUT',{progress:{records:{}}},t2);assert.deepEqual((await call('/student/relatifs','GET',undefined,t2)).progress,{records:{}});
 await call('/teacher/delete','POST',{id:a.student},admin);assert.equal(db.prepare('SELECT COUNT(*) AS n FROM dnb_attempts WHERE student_id=?').get(a.student).n,0);
 await call('/student/dnb/attempt','GET',undefined,token,401);
