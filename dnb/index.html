@@ -1350,6 +1350,12 @@ journey=function(){
 
 const home122=home;home=function(){home122();let p=app.querySelector('.panel');if(!p)return;let n=0;try{n=new Set((JSON.parse(localStorage.getItem('astreon-clairval-v1'))?.done||[]).filter(s=>['potion','ladder','bridge','stars','forge','mirror','robot'].includes(s))).size}catch{}let e=document.createElement('section');e.className='clairval-entry';e.innerHTML='<div class="clairval-icon" aria-hidden="true">✦</div><div><h2>Les terres de Clairval</h2><p>Une aventure en vue du dessus : explore le village, rencontre ses habitants, ouvre le pont, retrouve les sept sceaux, explore les donjons et aide les habitants du village.</p><p class="muted">'+n+'/7 sceaux · Aventure libre, sans note</p><a id="clairvalOpen" href="clairval.html">Explorer Clairval</a></div>';p.prepend(e)};
 
+
+/* V1.28 : capsule de révision Pythagore. */
+function filmLink128(label){let a=document.createElement('a');a.className='scratch-link';a.href='pythagore.html?v=128';a.textContent=label;return a}
+const filmMentor128=mentorView;mentorView=function(w,tab='intro',index=0){filmMentor128(w,tab,index);if(w===1&&mentorAllowed())mentorDialog.querySelector('.mentor-tabs')?.append(filmLink128('▶ Capsule animée de Pythagore'))};
+const filmHome128=home;home=function(){filmHome128();app.querySelector('[data-mentor="1"]')?.parentElement.append(filmLink128('▶ Revoir Pythagore en vidéo animée'))};
+const filmResults128=results;results=function(){let S=session;filmResults128();if(S?.mode==='hw'&&S.finished){let p=document.createElement('section');p.className='dnb-report';p.innerHTML='<h3>Progresser après le devoir</h3><p>Revois le cours avec Pythagore, passe le quiz et tente une nouvelle épreuve. Résultat indicatif pour ce prototype, sans modification de la note remise.</p>';p.append(filmLink128('▶ Revoir Pythagore et s’entraîner'));app.querySelector('.panel')?.append(p)}};
 let full=document.createElement('button');full.className='secondary fullbtn';full.textContent='⛶ Plein écran';full.onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();else full.textContent='Plein écran indisponible'}catch(e){full.textContent='Plein écran indisponible'}};$('access').after(full);
 })();
 
