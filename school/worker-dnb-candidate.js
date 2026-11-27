@@ -198,6 +198,12 @@ function dnbResult(row){let qs=JSON.parse(row.questions),answers=JSON.parse(row.
 function dnbPublic(row){let qs=JSON.parse(row.questions),answers=JSON.parse(row.answers),finished=!!row.submitted_at;return {assignment:DNB_ASSIGNMENT,student:row.student_id,qs:finished?qs:qs.map(({t,kind,labels,diagram,w,i,options})=>({t,kind,labels,diagram,w,i,options})),answers,at:row.position,finished,created:new Date(row.created_at*1000).toISOString(),submitted:finished?new Date(row.submitted_at*1000).toISOString():null,...(finished?{result:dnbResult(row)}:{})}}
 async function dnbRead(env,id){return env.DB.prepare('SELECT * FROM dnb_attempts WHERE student_id=? AND assignment=?').bind(id,DNB_ASSIGNMENT).first()}
 async function dnbRoutes(req,env,path,method){
+ if(path==='/teacher/dnb/roster'&&method==='GET'){
+  await auth(env,req,'teacher');
+  const {results}=await env.DB.prepare('SELECT s.id,s.classroom,a.answers,a.submitted_at FROM students s LEFT JOIN dnb_attempts a ON a.student_id=s.id AND a.assignment=? WHERE s.active=1 ORDER BY s.classroom,s.pseudo LIMIT 500').bind(DNB_ASSIGNMENT).all();
+  return response({assignment:DNB_ASSIGNMENT,students:results.filter(r=>/^3(?:\s|e|ème|eme|$)/i.test(r.classroom)||r.answers!==null).map(r=>({student:r.id,classroom:r.classroom,status:r.submitted_at?'submitted':r.answers!==null?'started':'none',completed:r.answers===null?0:JSON.parse(r.answers).filter(a=>Array.isArray(a)&&a.length>0&&a.every(v=>String(v).trim())).length}))})
+ }
+
  if(path==='/teacher/dnb/results'&&method==='GET'){await auth(env,req,'teacher');const {results}=await env.DB.prepare('SELECT a.*,s.classroom FROM dnb_attempts a JOIN students s ON s.id=a.student_id WHERE a.assignment=? AND a.submitted_at IS NOT NULL ORDER BY s.classroom,s.pseudo').bind(DNB_ASSIGNMENT).all();return response({assignment:DNB_ASSIGNMENT,reports:results.map(r=>({...dnbResult(r),classroom:r.classroom}))})}
  const s=await auth(env,req,'student'),id=s.student_id;
  if(path==='/student/dnb/start'&&method==='POST'){let row=await dnbRead(env,id);if(!row){let qs=makeHomework();await env.DB.prepare('INSERT OR IGNORE INTO dnb_attempts(student_id,assignment,questions,answers,position,created_at) VALUES(?,?,?,?,?,?)').bind(id,DNB_ASSIGNMENT,JSON.stringify(qs),JSON.stringify(qs.map(()=>null)),0,now()).run();row=await dnbRead(env,id)}return response(dnbPublic(row))}
