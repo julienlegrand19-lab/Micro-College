@@ -1,0 +1,175 @@
+/* Generated from the game bank. Read-only; no student storage. */
+(function(root){'use strict';
+const worlds=[['⚔️','Le royaume fragmenté','Fractions',4],['⛰️','Les montagnes de Pythagore','Pythagore',3],['🏛️','Les ruines de Thalès','Thalès',3],['🔭','L’observatoire des angles','Trigonométrie',4],['⚒️','Les forges de l’algèbre','Double distributivité',3],['🔮','La citadelle des identités','Identités remarquables',3]];
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+const rand=(a,b)=>a+Math.floor(Math.random()*(b-a+1)), pick=a=>a[rand(0,a.length-1)], gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a), rnd=x=>Math.round(x*10)/10;
+const fr=(n,d)=>{let g=gcd(n,d);return d/g===1?String(n/g):n/g+'/'+d/g}, sign=n=>n<0?'− '+Math.abs(n):'+ '+n, bin=(a,b)=>'('+ (a===1?'x':a+'x')+' '+sign(b)+')';
+function q(t,expected,solution,hint,kind='num',labels=['Réponse'],diagram=''){return {t,expected:Array.isArray(expected)?expected:[expected],solution,hint,kind,labels,diagram}}
+function tri(a,b,c,angle=''){return '<svg viewBox="0 0 310 205" width="310" role="img" aria-label="Triangle ABC rectangle en A, schéma non à l’échelle"><path d="M45 155 L45 35 L270 155 Z M45 141 H59 V155"/><text x="26" y="174">A</text><text x="26" y="27">B</text><text x="276" y="174">C</text><text x="8" y="95">'+esc(a)+'</text><text x="140" y="178">'+esc(b)+'</text><text x="155" y="83">'+esc(c)+'</text>'+(angle?'<text x="222" y="146">'+esc(angle)+'</text>':'')+'<text x="60" y="196" style="font-size:10px">Schéma non à l’échelle</text></svg>'}
+function thal(bow){return bow?'<svg viewBox="0 0 300 180" width="300" role="img" aria-label="A D B et C D E alignés, AC et BE parallèles"><path d="M45 32 L255 148 M45 148 L255 32 M45 32 V148 M255 32 V148"/><text x="23" y="28">A</text><text x="23" y="164">C</text><text x="144" y="82">D</text><text x="263" y="164">B</text><text x="263" y="28">E</text><text x="90" y="174" style="font-size:10px">Schéma non à l’échelle</text></svg>':'<svg viewBox="0 0 300 190" width="300" role="img" aria-label="Triangle ABC, D sur AB, E sur AC"><path d="M150 20 L30 160 H270 Z M90 90 H210"/><text x="145" y="15">A</text><text x="13" y="175">B</text><text x="276" y="175">C</text><text x="70" y="88">D</text><text x="218" y="88">E</text><text x="90" y="184" style="font-size:10px">Schéma non à l’échelle</text></svg>'}
+function make(w,i){
+let a=rand(2,7),b=rand(2,8),c=rand(2,6),d=rand(2,9),s=pick([-1,1]),t=pick([-1,1]); let k=rand(2,5);
+if(w===0){
+ if(i===0){let m=pick([2,3,5,7]),n=m+1;return q('Simplifier '+(m*k)+'/'+(n*k)+' en fraction irréductible.',fr(m,n),'Diviser le numérateur et le dénominateur par '+k+'.','Cherche un diviseur commun.','frac')}
+ if(i===1){let e=rand(2,5),f=e+1,op=pick([1,-1]);return q('Calculer '+a+'/'+e+' '+(op===1?'+':'−')+' '+b+'/'+f+'. Donner le résultat irréductible.',fr(a*f+op*b*e,e*f),'Mettre au même dénominateur '+e*f+', puis simplifier.','Cherche un dénominateur commun.','frac')}
+ if(i===2)return q('Calculer ('+s*a+'/'+b+') × '+c+'/'+d+'. Donner le résultat irréductible.',fr(s*a*c,b*d),'Multiplier les numérateurs et les dénominateurs, puis simplifier.','Multiplie séparément numérateurs et dénominateurs.','frac');
+ return q('Calculer '+a+'/'+b+' ÷ ('+s*c+'/'+d+'). Donner le résultat irréductible.',fr(s*a*d,b*c),'Diviser revient à multiplier par l’inverse.','Inverse la deuxième fraction.','frac')
+}
+if(w===1){let [u,v,h]=pick([[3,4,5],[5,12,13],[8,15,17],[7,24,25],[9,12,15]]).map(x=>x*k);
+ if(i===0)return q('ABC est rectangle en A. AB = '+u+' cm et AC = '+v+' cm. Calculer BC en cm.',h,'BC² = '+u+'² + '+v+'² = '+h*h+'.','Repère l’hypoténuse.','num',['BC (cm)'],tri(u,v,'?'));
+ if(i===1)return q('ABC est rectangle en A. BC = '+h+' cm et AB = '+u+' cm. Calculer AC en cm.',v,'AC² = '+h+'² − '+u+'² = '+v*v+'.','Isole le carré du côté recherché.','num',['AC (cm)'],tri(u,'?',h));
+ if(i===2)return q('Un triangle a pour côtés '+u+', '+v+' et '+h+' cm. Est-il rectangle ? Justifier sur ton brouillon.','oui','Le plus grand côté vérifie '+h+'² = '+u+'² + '+v+'². Réciproque de Pythagore.','Compare le carré du plus grand côté à la somme des deux autres carrés.','yn');
+ return q('Un triangle a pour côtés '+u+', '+v+' et '+(h+1)+' cm. Est-il rectangle ? Justifier sur ton brouillon.','non','Les carrés sont différents : '+(h+1)**2+' ≠ '+(u*u+v*v)+'. Contraposée de Pythagore.','Teste l’égalité de Pythagore.','yn')
+}
+if(w===2){
+ if(i===0)return q('D ∈ [AB], E ∈ [AC] et (DE) ∥ (BC). AD = '+a+' cm, AB = '+a*k+' cm, BC = '+b*k+' cm. Calculer DE en cm.',b,'DE/BC = AD/AB = 1/'+k+'.','Écris les rapports de Thalès.','num',['DE (cm)'],thal(false));
+ if(i===1)return q('Les points A, D, B et C, D, E sont alignés dans cet ordre. (AC) ∥ (BE). AD = '+a+' cm, DB = '+a*k+' cm, DC = '+b+' cm. Calculer DE en cm.',b*k,'AD/DB = DC/DE = 1/'+k+'.','Dans le nœud papillon, repère les côtés correspondants.','num',['DE (cm)'],thal(true));
+ if(i===2)return q('D ∈ [AB] et E ∈ [AC]. AD = '+a+', AB = '+a*k+', AE = '+b+', AC = '+b*k+' cm. (DE) et (BC) sont-elles parallèles ? Justifier sur ton brouillon.','oui','AD/AB = AE/AC = 1/'+k+' : réciproque de Thalès.','Compare AD/AB et AE/AC.','yn',['Réponse'],thal(false));
+ return q('D ∈ [AB] et E ∈ [AC]. AD = '+a+', AB = '+a*k+', AE = '+b+', AC = '+(b*k+1)+' cm. (DE) et (BC) sont-elles parallèles ? Justifier sur ton brouillon.','non','AD/AB et AE/AC sont différents : contraposée de Thalès.','Compare les deux rapports.','yn',['Réponse'],thal(false))
+}
+if(w===3){let angle=pick([25,30,35,40,45,50,55,60,65]), h=rand(8,24),adj=rand(4,17),opp=rand(3,14),r=angle*Math.PI/180;
+ if(i===0)return q('ABC est rectangle en A. BC = '+h+' cm, angle ACB = '+angle+'°. Calculer AB en cm, arrondi au dixième.',rnd(h*Math.sin(r)),'AB = '+h+' × sin('+angle+'°).','Sinus : opposé / hypoténuse.','num',['AB (cm)'],tri('?', '',h,angle+'°'));
+ if(i===1)return q('ABC est rectangle en A. BC = '+h+' cm, angle ACB = '+angle+'°. Calculer AC en cm, arrondi au dixième.',rnd(h*Math.cos(r)),'AC = '+h+' × cos('+angle+'°).','Cosinus : adjacent / hypoténuse.','num',['AC (cm)'],tri('', '?',h,angle+'°'));
+ if(i===2)return q('ABC est rectangle en A. AC = '+adj+' cm, angle ACB = '+angle+'°. Calculer AB en cm, arrondi au dixième.',rnd(adj*Math.tan(r)),'AB = '+adj+' × tan('+angle+'°).','Tangente : opposé / adjacent.','num',['AB (cm)'],tri('?',adj,'',angle+'°'));
+ return q('ABC est rectangle en A. AB = '+opp+' cm, AC = '+adj+' cm. Calculer l’angle ACB en degrés, arrondi au dixième.',rnd(Math.atan(opp/adj)*180/Math.PI),'angle ACB = arctan('+opp+'/'+adj+').','Utilise tan⁻¹ ou arctan en mode degrés.','num',['Angle (°)'],tri(opp,adj,'','?'))
+}
+if(w===4){let B=s*b,D=t*d;let A=i===0?1:a,C=i<=1?1:c;if(i===3){let e=rand(1,5);return q('Développer et réduire '+bin(A,B)+bin(C,D)+' '+sign(e)+'x². Donner a, b et c dans ax² + bx + c.',[A*C+e,A*D+B*C,B*D],'Produit : chaque terme du premier facteur multiplie chaque terme du second, puis ajouter '+e+'x².','Fais les quatre produits, puis regroupe.','coeff',['a (x²)','b (x)','c (constant)'])}
+ return q('Développer et réduire '+bin(A,B)+bin(C,D)+'. Donner a, b et c dans ax² + bx + c.',[A*C,A*D+B*C,B*D],'Quatre produits : '+A*C+'x², '+A*D+'x, '+B*C+'x, '+B*D+'.','Multiplie chaque terme du premier facteur par chaque terme du second.','coeff',['a (x²)','b (x)','c (constant)'])
+}
+let A=i===0?1:a,B=b;
+if(i===0||i===1){let S=i===0?1:-1;return q('Développer '+bin(A,S*B)+'². Donner a, b et c dans ax² + bx + c.',[A*A,2*A*S*B,B*B],'Carré d’une somme ou différence : premier carré, double produit, second carré.','N’oublie pas le double produit.','coeff',['a (x²)','b (x)','c (constant)'])}
+if(i===2)return q('Développer '+bin(A,B)+bin(A,-B)+'. Donner a, b et c dans ax² + bx + c.',[A*A,0,-B*B],'Produit d’une somme et d’une différence : différence de deux carrés.','Utilise (u + v)(u − v) = u² − v².','coeff',['a (x²)','b (x)','c (constant)']);
+return q('Factoriser x² − '+B*B+'. Compléter (x + a)(x − a) avec a positif.',B,'x² − '+B*B+' = (x + '+B+')(x − '+B+').','Reconnais la différence de deux carrés.','num',['a'])
+}
+
+/* V0.8 — alternative families, same assessment blueprint and legacy compatibility. */
+const baseMake=make;
+function alternate(w,i){
+ const a=rand(2,7),b=rand(2,8),c=rand(2,6),k=rand(2,5),s=pick([-1,1]),d=rand(3,9);
+ if(w===0){
+  if(i===0)return q('Simplifier −'+a*k+'/'+(a+1)*k+' en fraction irréductible.',fr(-a,a+1),'Diviser les deux termes par '+k+'.','Conserve le signe.','frac');
+  if(i===1)return q('Calculer '+a+'/'+d+' − ('+s*b+'/'+(2*d)+'). Donner le résultat irréductible.',fr(2*a-s*b,2*d),'Mettre au dénominateur '+2*d+' puis soustraire.','Attention au signe entre parenthèses.','frac');
+  if(i===2)return q('Calculer '+a+'/'+b+' × ('+s*c+'/'+(a*k)+'). Donner le résultat irréductible.',fr(s*c,b*k),'Simplifier le facteur commun '+a+', puis réduire.','Simplifie avant de multiplier.','frac');
+  return q('Une potion contient '+a+'/'+d+' litre. On remplit des fioles de 1/'+b+' litre. Calculer le quotient exact, en fraction irréductible (sans arrondir).',fr(a*b,d),'Le quotient vaut '+a+'/'+d+' × '+b+'.','Diviser par 1/'+b+' revient à multiplier par '+b+'.','frac')
+ }
+ if(w===1){
+  let [u,v,h]=pick([[3,4,5],[5,12,13],[8,15,17]]).map(x=>x*k);
+  if(i===0){let U=a+3,V=b+5;return q('Un mur vertical et le sol forment un angle droit. Une échelle relie le pied situé à '+U+' m du mur à un point à '+V+' m de hauteur. Calculer la longueur de l’échelle en m, arrondie au dixième.',rnd(Math.sqrt(U*U+V*V)),'L² = '+U+'² + '+V+'².','Le mur et le sol sont les côtés de l’angle droit.','num',['Longueur (m)'],tri(V,U,'?'))}
+  if(i===1)return q('Une rampe de '+h+' m relie le sol à une plateforme située à '+u+' m de hauteur. Le sol est horizontal et la hauteur verticale. Calculer la distance horizontale en m.',v,'Distance² = '+h+'² − '+u+'².','L’hypoténuse est la rampe.','num',['Distance (m)'],tri(u,'?',h));
+  let H=i===2?h+1:h;return q('Un triangle a pour côtés '+u+', '+v+' et '+H+' cm. Pour justifier si le triangle est rectangle, calculer le carré du plus grand côté et la somme des carrés des deux autres côtés.',[H*H,u*u+v*v],'Comparer '+H*H+' et '+(u*u+v*v)+' : '+(H*H===u*u+v*v?'le triangle est rectangle.':'le triangle n’est pas rectangle.'),'Utilise la réciproque ou la contraposée de Pythagore.','coeff',['Carré du plus grand côté','Somme des deux autres carrés'])
+ }
+ if(w===2){
+  if(i===0)return q('D ∈ [AB], E ∈ [AC], (DE) ∥ (BC). AD = '+a+', AB = '+a*k+', AE = '+b+' cm. Calculer AC en cm.',b*k,'AD/AB = AE/AC.','Écris les rapports correspondants.','num',['AC (cm)'],thal(false));
+  if(i===1)return q('A, D, B et C, D, E sont alignés dans cet ordre. (AC) ∥ (BE). AD = '+a+', DB = '+a*k+', AC = '+b+' cm. Calculer BE en cm.',b*k,'AD/DB = AC/BE = 1/'+k+'.','Compare les deux triangles du nœud papillon.','num',['BE (cm)'],thal(true));
+  const A=a*k,B=b*k+(i===2?1:0);return q('D ∈ [AB], E ∈ [AC]. AD = '+a+', AB = '+A+', AE = '+b+', AC = '+B+' cm. Pour tester le parallélisme, calculer les produits en croix AD × AC et AE × AB.',[a*B,b*A],'Les produits '+a*B+' et '+b*A+' sont '+(a*B===b*A?'égaux : réciproque de Thalès.':'différents : contraposée de Thalès.'),'Compare AD/AB et AE/AC.','coeff',['AD × AC','AE × AB'],thal(false))
+ }
+ if(w===3){let angle=pick([25,30,35,40,45,50,55,60,65]),rad=angle*Math.PI/180,n=rand(6,20);
+  if(i===0)return q('ABC rectangle en A, AB = '+n+' cm, angle ACB = '+angle+'°. Calculer BC en cm, arrondi au dixième.',rnd(n/Math.sin(rad)),'BC = '+n+' / sin('+angle+'°).','Isole l’hypoténuse dans le rapport sinus.','num',['BC (cm)'],tri(n,'','?',angle+'°'));
+  if(i===1)return q('ABC rectangle en A, AC = '+n+' cm, angle ACB = '+angle+'°. Calculer BC en cm, arrondi au dixième.',rnd(n/Math.cos(rad)),'BC = '+n+' / cos('+angle+'°).','Isole l’hypoténuse dans le rapport cosinus.','num',['BC (cm)'],tri('',n,'?',angle+'°'));
+  if(i===2)return q('ABC rectangle en A, AB = '+n+' cm, angle ACB = '+angle+'°. Calculer AC en cm, arrondi au dixième.',rnd(n/Math.tan(rad)),'AC = '+n+' / tan('+angle+'°).','Isole le côté adjacent.','num',['AC (cm)'],tri(n,'?','',angle+'°'));
+  let p=rand(3,n-1),use=pick(['sin','cos']);return q('ABC rectangle en A, BC = '+n+' cm, '+(use==='sin'?'AB':'AC')+' = '+p+' cm. Calculer l’angle ACB en degrés, arrondi au dixième.',rnd((use==='sin'?Math.asin(p/n):Math.acos(p/n))*180/Math.PI),'angle ACB = '+use+'⁻¹('+p+'/'+n+').','Calculatrice en mode degrés.','num',['Angle (°)'],tri(use==='sin'?p:'',use==='cos'?p:'',n,'?'))
+ }
+ if(w===4){let A=i===0?1:a,B=s*b,C=i<2?1:c,D=pick([-1,1])*d,E=i===3?rand(1,5):0;return q('Développer et réduire '+bin(A,B)+bin(C,D)+(E?' − '+E+'x':'')+'. Donner les coefficients de x², x et le terme constant.',[A*C,A*D+B*C-E,B*D],'Développer les quatre produits puis regrouper les termes de même degré.','Multiplie chaque terme du premier facteur par chaque terme du second.','coeff',['Coefficient de x²','Coefficient de x','Constante'])}
+ let B=b,A=i===0?1:a;
+ if(i<2){let S=i===0?1:-1;return q('Développer et réduire '+bin(A,S*B)+'² − '+B*B+'. Donner les coefficients de x², x et le terme constant.',[A*A,2*A*S*B,0],'Le terme constant du carré s’annule avec '+B*B+'.','Utilise l’identité remarquable puis réduis.','coeff',['Coefficient de x²','Coefficient de x','Constante'])}
+ if(i===2)return q('Développer et réduire '+bin(A,B)+bin(A,-B)+' + '+B*B+'. Donner les coefficients de x², x et le terme constant.',[A*A,0,0],'La différence de deux carrés se simplifie.','Utilise (u + v)(u − v).','coeff',['Coefficient de x²','Coefficient de x','Constante']);
+ return q('Factoriser '+A*A+'x² − '+B*B+'. Compléter (ax + b)(ax − b) avec a et b positifs.',[A,B],'Différence de deux carrés : ('+A+'x)² − '+B+'².','Identifie les deux carrés.','coeff',['a','b'])
+}
+make=function(w,i){return Math.random()<.5?baseMake(w,i):alternate(w,i)};
+
+
+/* V1.0 — three additional templates per chapter/slot. */
+const earlierMake=make;
+function extended(w,i,j){
+ const a=rand(2,7),b=rand(2,8),c=rand(2,6),d=rand(3,9),k=rand(2,5),s=pick([-1,1]),t=pick([-1,1]);
+ const F=(text,n,den,sol)=>q(text+' Donner le résultat irréductible.',fr(n,den),sol,'Écris les étapes sur ton brouillon.','frac');
+ const N=(text,value,sol,label='Réponse',diagram='')=>q(text,value,sol,'Identifie la propriété utile.','num',[label],diagram);
+ const C=(text,values,sol,labels=['Coefficient de x²','Coefficient de x','Constante'])=>q(text,values,sol,'Écris les étapes sur ton brouillon.','coeff',labels);
+ const Y=(text,yes,sol)=>q(text,yes?'oui':'non',sol,'Justifie en comparant les deux membres.','yn');
+ if(w===0){
+  if(i===0){let m=a+1,n=a,den=m*k,num=n*k;if(j===0)return F('Réduire '+num+'/'+den+' à sa plus simple expression.',n,m,'Diviser les deux termes par '+k+'.');if(j===1)return F('Écrire '+(-den)+'/'+num+' sous forme irréductible.',-m,n,'Le quotient est négatif ; diviser par '+k+'.');return F('Une réserve compte '+num+' cristaux bleus sur '+den+' cristaux. Quelle fraction représente les cristaux bleus ?',n,m,'La proportion vaut '+num+'/'+den+'.')}
+  if(i===1){if(j===0)return F('Calculer '+a+'/'+d+' + '+b+'/'+(d*k)+'.',a*k+b,d*k,'Multiplier les deux termes de la première fraction par '+k+'.');if(j===1)return F('Calculer 1 − '+a+'/'+(a+k)+'.',k,a+k,'Écrire 1 = '+(a+k)+'/'+(a+k)+'.');return F('Calculer '+a+'/'+d+' − '+b+'/'+d+' + '+c+'/'+d+'.',a-b+c,d,'Le dénominateur est commun.')}
+  if(i===2){if(j===0)return F('Calculer '+s*a+' × '+b+'/'+d+'.',s*a*b,d,'Écrire l’entier sur 1.');if(j===1)return F('Calculer ('+(-a)+'/'+b+') × ('+(-c)+'/'+d+').',a*c,b*d,'Le produit de deux nombres négatifs est positif.');return F('Calculer les '+a+'/'+(a+k)+' de '+b+'/'+d+' litre.',a*b,(a+k)*d,'Prendre une fraction d’une quantité revient à multiplier.')}
+  if(j===0)return F('Calculer '+a+'/'+b+' ÷ '+d+'.',a,b*d,'Multiplier par 1/'+d+'.');if(j===1)return F('Calculer '+a+' ÷ '+b+'/'+d+' (le diviseur est la fraction '+b+'/'+d+').',a*d,b,'Multiplier par '+d+'/'+b+'.');return F('Calculer ('+(-a)+'/'+b+') ÷ ('+(-c)+'/'+d+').',a*d,b*c,'Multiplier par l’inverse du second nombre négatif.')
+ }
+ if(w===1){
+  let [u,v,h]=pick([[3,4,5],[5,12,13],[8,15,17],[7,24,25]]).map(x=>x*k);
+  if(i===0){if(j===0)return N('Un rectangle mesure '+u+' m sur '+v+' m. Calculer sa diagonale en m.',h,'d² = '+u+'² + '+v+'².','Diagonale (m)');if(j===1)return N('Une tour verticale de '+u+' m est reliée par un câble à un point du sol horizontal situé à '+v+' m de son pied. Calculer la longueur du câble.',h,'Le câble est l’hypoténuse.','Longueur (m)');return N('Deux chemins perpendiculaires mesurent '+a+' m et '+d+' m. Calculer la distance directe entre leurs extrémités, au dixième.',rnd(Math.hypot(a,d)),'d² = '+a+'² + '+d+'².','Distance (m)')}
+  if(i===1){if(j===0)return N('Un rectangle a une diagonale de '+h+' cm et une largeur de '+u+' cm. Calculer sa longueur.',v,'L² = '+h+'² − '+u+'².','Longueur (cm)');if(j===1)return N('Une échelle de '+h+' m repose contre un mur vertical. Son pied est à '+v+' m du mur, sur un sol horizontal. Calculer la hauteur atteinte.',u,'Hauteur² = '+h+'² − '+v+'².','Hauteur (m)');return N('Un triangle DEF est rectangle en E. DF = '+h+' cm, EF = '+v+' cm. Calculer DE.',u,'DE² = DF² − EF².','DE (cm)')}
+  let H=(j===0||j===2&&i===3)?h:h+1,yes=H===h;
+  if(j===0)return Y('Un triangle de côtés '+v+', '+h+' et '+u+' cm est-il rectangle ?',true,h+'² = '+v+'² + '+u+'².');
+  if(j===1)return Y('Un constructeur a mesuré les trois côtés d’un triangle : '+u+', '+v+' et '+H+' m. Peut-il affirmer que le triangle est rectangle ?',yes,'Comparer '+H*H+' et '+(u*u+v*v)+'.');
+  return C('Le plus grand côté d’un triangle mesure '+H+' cm ; les autres mesurent '+u+' et '+v+' cm. Calculer la différence entre le carré du plus grand côté et la somme des deux autres carrés.',[H*H-u*u-v*v],'Une différence nulle caractérise un triangle rectangle.',['Différence (cm²)'])
+ }
+ if(w===2){
+  if(i===0){if(j===0)return N('D ∈ [AB], E ∈ [AC], (DE) ∥ (BC). AD = '+a+', DB = '+a*(k-1)+', DE = '+b+' cm. Calculer BC.',b*k,'AB = AD + DB ; BC/DE = AB/AD.','BC (cm)',thal(false));if(j===1)return N('D ∈ [AB], E ∈ [AC], (DE) ∥ (BC). AB = '+a*k+', AD = '+a+', AC = '+b*k+' cm. Calculer AE.',b,'AE/AC = AD/AB.','AE (cm)',thal(false));return N('Deux triangles ABC et ADE ont D sur [AB], E sur [AC] et (DE) ∥ (BC). AE = '+b+', AC = '+b*k+', AB = '+a*k+' cm. Calculer AD.',a,'AD/AB = AE/AC.','AD (cm)',thal(false))}
+  if(i===1){const pre='A, D, B et C, D, E sont alignés dans cet ordre. (AC) ∥ (BE). ';if(j===0)return N(pre+'AD = '+a+', DB = '+a*k+', BE = '+b*k+' cm. Calculer AC.',b,'AC/BE = AD/DB.','AC (cm)',thal(true));if(j===1)return N(pre+'DC = '+b+', DE = '+b*k+', DB = '+a*k+' cm. Calculer AD.',a,'AD/DB = DC/DE.','AD (cm)',thal(true));return N(pre+'AD = '+a+', DB = '+a*k+', DE = '+b*k+' cm. Calculer DC.',b,'DC/DE = AD/DB.','DC (cm)',thal(true))}
+  let yes=j===0?i===3:j===1?i===2:pick([true,false]),B=b*k+(yes?0:1);
+  if(j===0)return Y('D ∈ [AB], E ∈ [AC]. AD = '+a+', DB = '+a*(k-1)+', AE = '+b+', AC = '+B+' cm. Les droites (DE) et (BC) sont-elles parallèles ?',yes,'AB = '+a*k+' ; comparer AD/AB et AE/AC.');
+  if(j===1)return Y('A, D, B et C, D, E sont alignés dans cet ordre. AD = '+a+', DB = '+a*k+', DC = '+b+', DE = '+B+' cm. Les droites (AC) et (BE) sont-elles parallèles ?',yes,'Comparer AD/DB et DC/DE.');
+  return C('D ∈ [AB], E ∈ [AC]. AD = '+a+', AB = '+a*k+', AE = '+b+', AC = '+B+' cm. Calculer la différence AD × AC − AE × AB.',[a*B-b*a*k],'Une différence nulle signifie que les rapports sont égaux.',['Différence'])
+ }
+ if(w===3){let angle=pick([25,30,35,40,45,50,55,60,65]),r=angle*Math.PI/180,n=rand(7,22),p=rand(2,n-1),prefix='ABC est rectangle en A. ';
+  if(i===0){if(j===0)return N(prefix+'BC = '+n+' cm, angle ABC = '+angle+'°. Calculer AC au dixième.',rnd(n*Math.sin(r)),'AC = BC × sin(ABC).','AC (cm)');if(j===1)return N('Une échelle de '+n+' m fait un angle de '+angle+'° avec le sol horizontal. Calculer la hauteur atteinte au dixième.',rnd(n*Math.sin(r)),'La hauteur est opposée à l’angle.','Hauteur (m)');return N(prefix+'AC = '+n+' cm, angle ABC = '+angle+'°. Calculer BC au dixième.',rnd(n/Math.sin(r)),'BC = AC / sin(ABC).','BC (cm)')}
+  if(i===1){if(j===0)return N(prefix+'BC = '+n+' cm, angle ABC = '+angle+'°. Calculer AB au dixième.',rnd(n*Math.cos(r)),'AB = BC × cos(ABC).','AB (cm)');if(j===1)return N('Une rampe de '+n+' m fait un angle de '+angle+'° avec le sol horizontal. Calculer sa projection horizontale au dixième.',rnd(n*Math.cos(r)),'La projection est adjacente à l’angle.','Distance (m)');return N(prefix+'AB = '+n+' cm, angle ABC = '+angle+'°. Calculer BC au dixième.',rnd(n/Math.cos(r)),'BC = AB / cos(ABC).','BC (cm)')}
+  if(i===2){if(j===0)return N(prefix+'AB = '+n+' cm, angle ABC = '+angle+'°. Calculer AC au dixième.',rnd(n*Math.tan(r)),'AC = AB × tan(ABC).','AC (cm)');if(j===1)return N('À '+n+' m du pied d’une tour verticale, on vise son sommet sous un angle de '+angle+'° par rapport à l’horizontale (visée depuis le sol). Calculer la hauteur au dixième.',rnd(n*Math.tan(r)),'La hauteur vaut distance × tangente.','Hauteur (m)');return N(prefix+'AC = '+n+' cm, angle ABC = '+angle+'°. Calculer AB au dixième.',rnd(n/Math.tan(r)),'AB = AC / tan(ABC).','AB (cm)')}
+  let trig=j===0?'sin':j===1?'cos':'tan',value=j===0?Math.asin(p/n):j===1?Math.acos(p/n):Math.atan(p/n);
+  return N(prefix+(j===0?'AC = '+p+', BC = '+n:j===1?'AB = '+p+', BC = '+n:'AC = '+p+', AB = '+n)+' cm. Calculer l’angle ABC au dixième de degré.',rnd(value*180/Math.PI),'angle ABC = '+trig+'⁻¹('+p+'/'+n+').','Angle (°)')
+ }
+ if(w===4){let A=i===0?1:a,B=s*b,Cc=i<2?1:c,D=t*d,m=i===3?k:1,base=[A*Cc,A*D+B*Cc,B*D];if(j===0)return C('Développer et réduire '+bin(A,B)+bin(Cc,D)+' + '+k+'x. Donner les trois coefficients.',[base[0],base[1]+k,base[2]],'Développer puis ajouter '+k+'x.');if(j===1)return C('Développer et réduire −'+m+bin(A,B)+bin(Cc,D)+'. Donner les trois coefficients.',base.map(v=>-m*v),'Développer puis multiplier tous les termes par −'+m+'.');return C('Développer et réduire '+bin(A,B)+bin(Cc,D)+' − '+bin(A,-B)+bin(Cc,D)+'. Donner les trois coefficients.',[0,2*B*Cc,2*B*D],'Développer les deux produits puis soustraire chacun des termes.')}
+ let A=i===0?1:a,B=b,sg=i===1?-1:1;
+ if(i<2){if(j===0)return C('Développer et réduire '+bin(A,sg*B)+'² + '+k+'x. Donner les trois coefficients.',[A*A,2*A*sg*B+k,B*B],'Utiliser le carré puis ajouter '+k+'x.');if(j===1)return C('Développer et réduire −'+bin(A,sg*B)+'². Donner les trois coefficients.',[-A*A,-2*A*sg*B,-B*B],'Changer le signe de chaque terme après développement.');return C('Développer et réduire '+bin(A,sg*B)+'² − '+A*A+'x². Donner les trois coefficients.',[0,2*A*sg*B,B*B],'Les termes en x² s’annulent.')}
+ if(i===2){if(j===0)return C('Développer et réduire '+bin(A,B)+bin(A,-B)+' − '+k+'x. Donner les trois coefficients.',[A*A,-k,-B*B],'Utiliser la différence de deux carrés.');if(j===1)return C('Développer et réduire '+k+bin(A,B)+bin(A,-B)+'. Donner les trois coefficients.',[k*A*A,0,-k*B*B],'Multiplier la différence de deux carrés par '+k+'.');return C('Développer et réduire '+bin(A,B)+bin(A,-B)+' − '+A*A+'x². Donner les trois coefficients.',[0,0,-B*B],'Les termes en x² s’annulent.')}
+ if(j===0)return C('Factoriser x² + '+2*B+'x + '+B*B+'. Compléter (x + b)² avec b positif.',[B],'Carré d’une somme.',['b']);
+ if(j===1)return C('Factoriser x² − '+2*B+'x + '+B*B+'. Compléter (x − b)² avec b positif.',[B],'Carré d’une différence.',['b']);
+ return C('Factoriser '+A*A+'x² + '+2*A*B+'x + '+B*B+'. Compléter (ax + b)² avec a et b positifs.',[A,B],'Carré d’une somme.',['a','b'])
+}
+make=function(w,i){let j=rand(0,4);return j<2?earlierMake(w,i):extended(w,i,j-2)};
+
+
+/* Guided geometry: four independently scored steps, stable task structure. */
+function guidedGeometry(Q,w,i){
+ const n=[...Q.t.matchAll(/\d+/g)].map(m=>Number(m[0])),v=Q.expected[0],s=Object.fromEntries([...Q.t.matchAll(/\b([A-Z]{2}) = (\d+)/g)].map(m=>[m[1],+m[2]]));
+ const choice=(label,answer,...wrong)=>({label,answer,options:[answer,...wrong]});
+ const number=(label,answer)=>({label,answer,options:null});
+ const theorem=(answer,...wrong)=>choice('Propriété utilisée',answer,...wrong);
+ let steps=[];
+ if(w===1&&i<2){
+  let target=i===0?'BC':'AC',a=n[0],b=n[1];
+  steps=[theorem('Théorème de Pythagore','Réciproque de Pythagore','Contraposée de Pythagore','Théorème de Thalès'),choice('Dans ABC rectangle en A, on écrit :','BC² = AB² + AC²','AB² = BC² + AC²','AC² = AB² + BC²','BC = AB + AC'),choice('Le carré de '+target+' vaut :',i===0?a+'² + '+b+'²':a+'² − '+b+'²',i===0?a+'² − '+b+'²':a+'² + '+b+'²',a+' + '+b,a+' × '+b),number('Donc '+target+' (en cm) =',v)];
+ }else if(w===1){
+  let [a,b,c]=n.sort((a,b)=>a-b),yes=v==='oui';
+  steps=[number('Carré du plus grand côté (cm²)',c*c),number('Somme des carrés des deux autres côtés (cm²)',a*a+b*b),theorem(yes?'Réciproque de Pythagore':'Contraposée de Pythagore',yes?'Contraposée de Pythagore':'Réciproque de Pythagore','Théorème de Pythagore','Théorème de Thalès'),choice('Conclusion',yes?'Le triangle est rectangle.':'Le triangle n’est pas rectangle.',yes?'Le triangle n’est pas rectangle.':'Le triangle est rectangle.','Le triangle est forcément équilatéral.','Les longueurs ne permettent jamais de conclure.')];
+ }else if(w===2&&i<2){
+  let classic=i===0,target=classic?'DE':'DE';
+  let ratio=classic?'AD/AB = DE/BC':'AD/DB = DC/DE';
+  let calc=classic?s.BC+' × '+s.AD+' / '+s.AB:s.DC+' × '+s.DB+' / '+s.AD;
+  let wrong=classic?[s.BC+' × '+s.AB+' / '+s.AD,s.BC+' + '+s.AD,s.BC+' − '+s.AD]:[s.DC+' × '+s.AD+' / '+s.DB,s.DC+' + '+s.DB,s.DC+' − '+s.AD];
+  steps=[theorem('Théorème de Thalès','Réciproque de Thalès','Contraposée de Thalès','Théorème de Pythagore'),choice('Les rapports correspondants sont :',ratio,...(classic?['AB/AD = DE/BC','AD/AB = BC/DE','AD/BC = DE/AB']:['DB/AD = DC/DE','AD/DC = DE/DB','AD/DB = DE/DC'])),choice('Pour calculer '+target+', on effectue :',calc,...wrong),number('Donc '+target+' (en cm) =',v)];
+ }else if(w===2){
+  let yes=v==='oui';
+  steps=[number('Produit en croix AD × AC',s.AD*s.AC),number('Produit en croix AE × AB',s.AE*s.AB),theorem(yes?'Réciproque de Thalès':'Contraposée de Thalès',yes?'Contraposée de Thalès':'Réciproque de Thalès','Théorème de Thalès','Théorème de Pythagore'),choice('Conclusion',yes?'(DE) ∥ (BC)':'(DE) et (BC) ne sont pas parallèles',yes?'(DE) et (BC) ne sont pas parallèles':'(DE) ∥ (BC)','(DE) ⟂ (BC)','DE = BC')];
+ }else if(w===3&&i<3){
+  let angle=n[1],known=n[0],f=['sin','cos','tan'][i],target=i===1?'AC':'AB',den=i===2?'AC':'BC',ratio=f+'(ACB) = '+target+'/'+den;
+  steps=[choice('Dans ABC rectangle en A, quelle relation utiliser ?',ratio,...(i===0?['cos(ACB) = AB/BC','tan(ACB) = AB/BC','sin(ACB) = BC/AB']:i===1?['sin(ACB) = AC/BC','tan(ACB) = AC/BC','cos(ACB) = BC/AC']:['sin(ACB) = AB/AC','cos(ACB) = AB/AC','tan(ACB) = AC/AB'])),choice('On remplace par les données :',f+'('+angle+'°) = '+target+'/'+known,f+'('+angle+'°) = '+known+'/'+target,f+'('+known+'°) = '+target+'/'+angle,f+'('+angle+'°) = '+target+' × '+known),choice('On isole '+target+' :',target+' = '+known+' × '+f+'('+angle+'°)',target+' = '+known+' / '+f+'('+angle+'°)',target+' = '+f+'('+angle+'°) / '+known,target+' = '+known+' + '+f+'('+angle+'°)'),number('Donc '+target+' ≈ (en cm, au dixième)',v)];
+ }else if(w===3){
+  let a=s.AB,b=s.AC;
+  steps=[choice('Dans ABC rectangle en A, on utilise :','tan(ACB) = AB/AC','sin(ACB) = AB/AC','cos(ACB) = AB/AC','tan(ACB) = AC/AB'),choice('On remplace par les données :','tan(ACB) = '+a+'/'+b,'tan(ACB) = '+b+'/'+a,'tan(ACB) = '+a+' × '+b,'tan(ACB) = '+a+' + '+b),choice('Pour trouver l’angle, on utilise :','arctan('+a+'/'+b+')','tan('+a+'/'+b+')','arcsin('+a+'/'+b+')','arccos('+a+'/'+b+')'),number('Donc ACB ≈ (en degrés, au dixième)',v)];
+ }
+ if(steps.length!==4)return Q;
+ let options=steps.map(p=>{if(!p.options)return null;let a=[...new Set(p.options)];while(a.length<4)a.push('Aucune de ces expressions'+(a.length===3?'':' ('+a.length+')'));for(let j=a.length-1;j>0;j--){let k=rand(0,j);[a[j],a[k]]=[a[k],a[j]]}return a});
+ return {...Q,kind:'proof',labels:steps.map(p=>p.label),expected:steps.map(p=>p.answer),options,solution:steps.map(p=>p.label+' : '+p.answer).join('\n')};
+}
+function homeworkQuestion(w,i){let Q=baseMake(w,i);if(w>=1&&w<=3){if((w===1||w===2)&&i>=2)Q=baseMake(w,Math.random()<.5?2:3);Q=guidedGeometry(Q,w,i)}return {...Q,w,i}}
+
+function normalize(v){return String(v??'').trim().replace(/−/g,'-').replace(/,/g,'.').replace(/\s/g,'').toLowerCase()}
+function proofFraction(Q,ans){if(!Array.isArray(Q.expected)||!Array.isArray(ans)||ans.length!==Q.expected.length)return 0;return Q.expected.reduce((n,e,i)=>{let a=normalize(ans[i]);return n+Number(!!a&&(typeof e==='number'?/^[-+]?\d+(?:\.\d+)?$/.test(a)&&Math.abs(Number(a)-e)<1e-8:a===normalize(e)))},0)/Q.expected.length}
+function questionFraction(Q,ans){return Q.kind==='proof'?proofFraction(Q,ans):Number(correct(Q,ans))}
+function correct(Q,ans){if(Q.kind==='proof')return proofFraction(Q,ans)===1;if(!Array.isArray(Q.expected)||!Array.isArray(ans)||ans.length!==Q.expected.length)return false;return Q.expected.every((e,i)=>{const a=normalize(ans[i]);if(!a)return false;if(Q.kind==='yn')return a===e;if(Q.kind==='frac'){const m=a.match(/^([+-]?\d+)(?:\/([1-9]\d*))?$/);if(!m)return false;const n=Number(m[1]),d=Number(m[2]||1);return Number.isSafeInteger(n)&&Number.isSafeInteger(d)&&gcd(n,d)===1&&fr(n,d)===String(e)}return /^[-+]?\d+(?:\.\d+)?$/.test(a)&&Math.abs(Number(a)-Number(e))<1e-8})}
+function expected(Q){return Q.expected.join(' ; ').replace(/\./g,',')}
+function build(w){return Array.from({length:4},(_,i)=>w>=1&&w<=3?homeworkQuestion(w,i):({...make(w,i),w,i}))}
+function makeHomework(){return worlds.flatMap((_,w)=>Array.from({length:4},(_,i)=>homeworkQuestion(w,i)))}
+function selfTest(){const all=makeHomework();return all.length===24&&all.every(Q=>correct(Q,Q.expected.map(String))&&!correct(Q,Q.expected.map(()=>'')))&&worlds.reduce((x,w)=>x+w[3],0)===20}
+
+root.AstreonTeacherBank=Object.freeze({homeworkQuestion,make,worlds});
+})(globalThis);
