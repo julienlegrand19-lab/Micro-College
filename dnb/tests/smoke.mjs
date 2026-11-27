@@ -24,6 +24,9 @@ try{
  await click('dailyOpen');await click('replayStart');await page.locator('#replay0').fill('0');for(const f of await page.locator('dialog[open] [data-study-field]').all())await f.fill('0');await click('replayCheck');await page.locator('#replayFeedback').waitFor();await click('replayNext');await click('replayClose');
  await click('survivalOpen');await click('replayStart');assert.equal(await page.locator('.survival-hud').count(),1);await click('replayClose');
  await page.locator('#combatDifficulty').selectOption('story');
+ await click('notebookOpen');assert.equal(await page.locator('[data-skill]').count(),24);
+ await click('reviewPlan');await page.locator('#skill0').fill('0');for(const f of await page.locator('dialog[open] [data-study-field]').all())await f.fill('0');await click('skillCheck');assert(await page.locator('#skillNext').isEnabled());await click('skillReturn');await click('writingOpen');assert.equal(await page.locator('[data-writing]').count(),8);await page.locator('[data-writing="1"]').click();await page.locator('#draftReason').fill('ABC est rectangle en A.');await click('writingReveal');await page.locator('[data-writing-check="0"]').check();await click('writingDone');await click('writingBack');await click('notebookClose');
+
 
 
 
