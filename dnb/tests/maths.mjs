@@ -5,7 +5,7 @@ const start=html.indexOf('const worlds='),end=html.indexOf('let session=null;');
 const source=html.slice(start,end);
 const bank=h=>h.slice(h.indexOf('function make(w,i)'),h.indexOf('function normalize(v)'));
 assert.equal(bank(html),bank(worker),'Les banques locale et serveur doivent être identiques');
-const {variants,correct,worlds}=new Function('localStorage',source+';return {variants:[baseMake,alternate,...[0,1,2].map(j=>(w,i)=>extended(w,i,j))],correct,worlds}')({getItem:()=>null,setItem:()=>{}});
+const {variants,correct,worlds,makeHomework}=new Function('localStorage',source+';return {variants:[baseMake,alternate,...[0,1,2].map(j=>(w,i)=>extended(w,i,j))],correct,worlds,makeHomework}')({getItem:()=>null,setItem:()=>{}});
 // Independent expression parser: no eval and no shared generation functions.
 function expression(input,x=0){
  let tokens=input.replace(/−/g,'-').replace(/²/g,'^2').replace(/×/g,'*').replace(/÷/g,'/').replace(/\s+/g,'').match(/\d+|x|[()+*/^\-]/g)||[];
@@ -63,5 +63,10 @@ for(let w=0;w<6;w++)for(let slot=0;slot<4;slot++)for(let variant=0;variant<5;var
  if(w===4||w===5&&slot<3){let m=Q.t.match(/^Développer(?: et réduire)? (.*?)\./);assert(m,Q.t);let [a,b,c]=Q.expected;for(let x of [-3,-1,0,2,5])approx(expression(m[1],x),a*x*x+b*x+c,Q.t);independent++}
  if(w===5&&slot===3){let m=Q.t.match(/^Factoriser (.*?)\./);assert(m,Q.t);let [a,b]=Q.expected;if(b===undefined){b=a;a=1}let same=Q.t.includes('² avec');for(let x of [-3,0,2,5]){let value=same?(Q.t.includes('(x − b)')?(a*x-b)**2:(a*x+b)**2):(a*x+b)*(a*x-b);approx(expression(m[1],x),value,Q.t)}independent++}
 }
+// The new scored blueprint is invariant in task shape, even if numerical values change.
+const signature=qs=>qs.map(q=>[q.w,q.i,q.kind,q.labels.length].join(':')).join('|');
+const reference=signature(makeHomework());for(let n=0;n<1000;n++){let qs=makeHomework();assert.equal(signature(qs),reference);assert.equal(qs.reduce((s,q)=>s+(correct(q,q.expected.map(String))?worlds[q.w][3]/4:0),0),20)}
+assert.equal(html.match(/function makeHomework\(\)\{[^\n]+/)[0],worker.match(/function makeHomework\(\)\{[^\n]+/)[0]);
+console.log('PASS: 1000 devoirs, structure et barème invariants.');
 assert.equal(worlds.reduce((n,w)=>n+w[3],0),20);
 console.log('PASS: '+total+' questions; '+independent+' vérifications indépendantes sur les six chapitres; banques identiques.');
