@@ -247,7 +247,7 @@ function guidedGeometry(Q,w,i){
  let options=steps.map(p=>{if(!p.options)return null;let a=[...new Set(p.options)];while(a.length<4)a.push('Aucune de ces expressions'+(a.length===3?'':' ('+a.length+')'));for(let j=a.length-1;j>0;j--){let k=rand(0,j);[a[j],a[k]]=[a[k],a[j]]}return a});
  return {...Q,kind:'proof',labels:steps.map(p=>p.label),expected:steps.map(p=>p.answer),options,solution:steps.map(p=>p.label+' : '+p.answer).join('\n')};
 }
-function homeworkQuestion(w,i){let Q=baseMake(w,i);if(w>=1&&w<=3){if((w===1||w===2)&&i>=2)Q=baseMake(w,Math.random()<.5?2:3);Q=guidedGeometry(Q,w,i)}return {...Q,w,i}}
+function homeworkQuestion(w,i){let Q=baseMake(w,i);if(w>=1&&w<=3){Q=guidedGeometry(Q,w,i)}return {...Q,w,i}}
 
 function normalize(v){return String(v??'').trim().replace(/−/g,'-').replace(/,/g,'.').replace(/\s/g,'').toLowerCase()}
 function proofFraction(Q,ans){if(!Array.isArray(Q.expected)||!Array.isArray(ans)||ans.length!==Q.expected.length)return 0;return Q.expected.reduce((n,e,i)=>{let a=normalize(ans[i]);return n+Number(!!a&&(typeof e==='number'?/^[-+]?\d+(?:\.\d+)?$/.test(a)&&Math.abs(Number(a)-e)<1e-8:a===normalize(e)))},0)/Q.expected.length}

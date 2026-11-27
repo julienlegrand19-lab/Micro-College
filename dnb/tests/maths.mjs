@@ -65,6 +65,18 @@ for(let w=0;w<6;w++)for(let slot=0;slot<4;slot++)for(let variant=0;variant<5;var
 }
 // The new scored blueprint is invariant in task shape, even if numerical values change.
 const signature=qs=>qs.map(q=>[q.w,q.i,q.kind,q.labels.length].join(':')).join('|');
+// V1.27 : each assessment must actually test both directions of both theorems.
+for(let n=0;n<1000;n++){
+ let qs=makeHomework();
+ for(let [w,name] of [[1,'Pythagore'],[2,'Thalès']]){
+  for(let [slot,property] of [[2,'Réciproque'],[3,'Contraposée']]){
+   let q=qs.find(q=>q.w===w&&q.i===slot);
+   assert.equal(q.expected[2],property+' de '+name);
+   assert(q.options[2].includes(q.expected[2]));
+  }
+ }
+}
+console.log('PASS: 1000 devoirs équilibrés, réciproque et contraposée garanties.');
 const reference=signature(makeHomework());for(let n=0;n<100;n++){let qs=makeHomework();assert.equal(qs.filter(q=>q.kind==='proof').length,12);for(let q of qs.filter(q=>q.kind==='proof')){assert.equal(q.expected.length,4);for(let j=0;j<4;j++){if(q.options[j]){assert.equal(q.options[j].length,4);assert.equal(new Set(q.options[j]).size,4);assert(q.options[j].includes(q.expected[j]));}}let a=q.expected.map(String);a[0]='';assert.equal(questionFraction(q,a),.75);assert.equal(questionFraction(q,q.expected.map(String)),1)}}for(let n=0;n<1000;n++){let qs=makeHomework();assert.equal(signature(qs),reference);assert.equal(qs.reduce((s,q)=>s+(correct(q,q.expected.map(String))?worlds[q.w][3]/4:0),0),20)}
 assert.equal(html.match(/function makeHomework\(\)\{[^\n]+/)[0],worker.match(/function makeHomework\(\)\{[^\n]+/)[0]);
 console.log('PASS: 1000 devoirs, structure et barème invariants.');
