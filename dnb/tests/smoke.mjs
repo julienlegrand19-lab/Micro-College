@@ -9,7 +9,7 @@ const page=await context.newPage();
 page.on('pageerror',e=>errors.push(String(e)));
 async function click(id){await page.locator('#'+id).click()}
 async function optional(id){let e=page.locator('#'+id);if(await e.count()&&await e.isVisible())await e.click()}
-async function question(){await optional('cutnext');await optional('direct');await page.locator('.question').waitFor()}
+async function question(){await optional('cutnext');await optional('direct');await page.locator('#app .question').waitFor()}
 try{
  await page.goto(base);await page.locator('#hw').waitFor();
  assert.equal(await page.locator('.atlas-node').count(),6);
@@ -18,7 +18,7 @@ try{
  await click('mockOpen');await click('beginMock');assert.equal(await page.locator('[data-mock]').count(),24);await page.locator('#mockTime').waitFor();await page.locator('dialog[open]').evaluate(d=>d.close());
  await click('hw');await optional('prologueSkip');await page.locator('#student').fill('TEST-E01');await click('start');
  await page.locator('#walk').waitFor();assert.equal(await page.locator('#secret').count(),1);
- await click('direct');await page.locator('.question').waitFor();
+ await click('direct');await page.locator('#app .question').waitFor();
  let attempt=await page.evaluate(()=>JSON.parse(localStorage.getItem('gardiens-dnb-v1')).hw);
  assert.equal(attempt.qs.length,24);
  for(let i=0;i<24;i++){
@@ -41,7 +41,7 @@ try{
   if(req.method()==='OPTIONS')return route.fulfill({status:200,headers,body:'{}'});
   let result={ok:true};if(path==='/health')result={ok:true,configured:true,dnb:1};else if(path==='/student/login')result={token:'a'.repeat(64),id:'test-e02',name:'TEST-E02'};else if(path==='/student/dnb/start')result=publicAttempt(false);else if(path==='/student/dnb/save'){let p=req.postDataJSON();saved=p.answers;position=p.at}else if(path==='/student/dnb/submit'){let p=req.postDataJSON();saved=p.answers;position=p.at;result=publicAttempt(true)}else if(path!=='/student/logout')throw Error('Unexpected mocked route '+path);await route.fulfill({status:200,headers,body:JSON.stringify(result)})
  });
- await online.goto(base+'?school=1');await online.locator('#hw').click();await online.locator('#onlineName').fill('TEST-E02');await online.locator('#onlinePass').fill('test-only');await online.locator('#onlineStart').click();await online.locator('#direct').click();await online.locator('.question').waitFor();let Q=final.qs[0];await online.locator('#a0').fill(String(Q.expected[0]));await online.locator('#finish').click();await online.locator('#submit').click();await online.getByText('Remise confirmée par le serveur', {exact:false}).waitFor();assert.equal(saved[0][0],String(Q.expected[0]));await online.close();
+ await online.goto(base+'?school=1');await online.locator('#hw').click();await online.locator('#onlineName').fill('TEST-E02');await online.locator('#onlinePass').fill('test-only');await online.locator('#onlineStart').click();await online.locator('#direct').click();await online.locator('#app .question').waitFor();let Q=final.qs[0];await online.locator('#a0').fill(String(Q.expected[0]));await online.locator('#finish').click();await online.locator('#submit').click();await online.getByText('Remise confirmée par le serveur', {exact:false}).waitFor();assert.equal(saved[0][0],String(Q.expected[0]));await online.close();
  assert.deepEqual(errors,[]);
  console.log('PASS: mobile local campaign, reload, perfect grading, teacher import, mocked online submission, study and mock entry');
 }finally{await browser.close()}
