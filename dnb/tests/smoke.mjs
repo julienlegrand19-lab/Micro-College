@@ -21,6 +21,19 @@ try{
   await click('mentorContinue');
  }
  await page.setViewportSize({width:390,height:844});
+ // The personal notebook is independent of the graded assignment.
+ await click('personalOpen');assert((await page.locator('.personal-stats').textContent()).includes('0/24'));
+ await page.locator('[data-personal-length="3"]').click();assert.equal(await page.locator('.personal-plan>div').count(),3);
+ await click('personalStart');
+ await click('personalHint');
+ let fields=page.locator('.personal-dialog [data-study-field]');
+ for(let j=0;j<await fields.count();j++){let f=fields.nth(j);if(await f.evaluate(e=>e.tagName==='SELECT'))await f.selectOption({index:1});else await f.fill('1')}
+ await click('personalCheck');assert(await page.locator('#personalNext').isEnabled());
+ let log=await page.evaluate(()=>JSON.parse(localStorage.getItem('gardiens-dnb-v1')).revisionBook);
+ assert.equal(Object.values(log.skills).length,1);assert.equal(Object.values(log.skills)[0].help,1);assert.equal(Object.values(log.skills)[0].ok+Object.values(log.skills)[0].err,0);
+ await click('personalReturn');assert((await page.locator('.personal-stats').textContent()).includes('0/24'));await click('personalClose');
+ await page.reload();await click('personalOpen');assert((await page.locator('.personal-dialog').textContent()).includes('1 avec indice'));await click('personalClose');
+
 
  assert.equal(await page.locator('.atlas-node').count(),6);
  assert.equal(await page.locator('[data-mentor]').count(),6);
