@@ -12,6 +12,16 @@ async function optional(id){let e=page.locator('#'+id);if(await e.count()&&await
 async function question(){await optional('cutnext');await optional('direct');await page.locator('#app .question').waitFor()}
 try{
  await page.goto(base);await page.locator('#hw').waitFor();
+ // Narrow screens and landscape: the document must not overflow horizontally.
+ for(const viewport of [{width:320,height:640},{width:375,height:812},{width:844,height:390}]){
+  await page.setViewportSize(viewport);
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+1),'home overflow '+JSON.stringify(viewport));
+  await page.locator('[data-mentor="1"]').click();await page.locator('[data-mentor-tab="example"]').click();
+  assert(await page.evaluate(()=>{let d=document.querySelector('.mentor-dialog');return d.scrollWidth<=d.clientWidth+1}),'mentor overflow '+JSON.stringify(viewport));
+  await click('mentorContinue');
+ }
+ await page.setViewportSize({width:390,height:844});
+
  assert.equal(await page.locator('.atlas-node').count(),6);
  assert.equal(await page.locator('[data-mentor]').count(),6);
  await page.locator('[data-mentor="1"]').click();await page.getByRole('dialog',{name:'Rencontre avec le maître'}).waitFor();
@@ -59,7 +69,7 @@ try{
  await optional('finalContinue');await click('submit');await page.locator('#exportJson').waitFor();assert.equal((await page.locator('.score').textContent()).trim(),'20/20');
  let final=await page.evaluate(()=>JSON.parse(localStorage.getItem('gardiens-dnb-v1')).hw);assert(final.finished);
  let report={format:'astreon-dnb-report-v1',student:final.student,submitted:final.submitted,points:[4,3,3,4,3,3],total:20,questions:final.qs.map((Q,j)=>({chapter:Q.w,slot:Q.i,text:Q.t,kind:Q.kind,expected:Q.expected,response:final.answers[j]}))};
- const desktop=await browser.newPage({viewport:{width:1280,height:800},reducedMotion:'reduce'});desktop.on('pageerror',e=>errors.push(String(e)));await desktop.goto(base+'professeur.html');await desktop.locator('#files').setInputFiles({name:'test.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(report))});await desktop.waitForFunction(()=>document.querySelector('#n').textContent==='1');assert.equal((await desktop.locator('#avg').textContent()).trim(),'20');await desktop.close();
+ const desktop=await browser.newPage({viewport:{width:1280,height:800},reducedMotion:'reduce'});desktop.on('pageerror',e=>errors.push(String(e)));await desktop.goto(base+'professeur.html');await desktop.locator('#files').setInputFiles({name:'test.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(report))});await desktop.waitForFunction(()=>document.querySelector('#n').textContent==='1');assert.equal((await desktop.locator('#avg').textContent()).trim(),'20');assert((await desktop.locator('#grades').textContent()).includes('Local non certifié'));await desktop.locator('#sourceFilter').selectOption('server');assert.equal(await desktop.locator('#n').textContent(),'0');await desktop.locator('#sourceFilter').selectOption('local');assert.equal(await desktop.locator('#n').textContent(),'1');await desktop.close();
  const online=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});online.on('pageerror',e=>errors.push(String(e)));
  let saved=final.qs.map(()=>null),position=0;
  const publicAttempt=finished=>({student:'test-e02',qs:finished?final.qs:final.qs.map(({t,kind,labels,diagram,w,i})=>({t,kind,labels,diagram,w,i})),answers:saved,at:position,finished,created:final.created,submitted:finished?new Date().toISOString():null});
