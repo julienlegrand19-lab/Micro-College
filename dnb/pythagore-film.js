@@ -2,9 +2,9 @@
 (function(root){
 'use strict';
 const scenes=[
-['Le temple des hauteurs','Le pont de Clairval','intro',['Une longueur inconnue…'],'Bienvenue, jeune gardien. Le pont du temple a besoin de nous. Pour le réparer, nous devons calculer une longueur sans pouvoir la mesurer directement. Je suis Pythagore. Suis-moi : nous allons apprendre à reconnaître un triangle rectangle, calculer une longueur et vérifier si un triangle est rectangle.'],
+['Le temple des hauteurs','Une leçon à Crotone','intro',['Une longueur inconnue…'],'Bienvenue, mes jeunes élèves. Ici, dans notre école, nous apprenons à comprendre le monde par les nombres et les figures. Un bâtisseur doit réparer un pont. Mais comment trouver une longueur sans la mesurer ? Approchez-vous. Nous allons observer un triangle rectangle, puis découvrir comment calculer ses longueurs et reconnaître un angle droit.'],
 ['Les trois côtés','Reconnaître l’hypoténuse','right',['ABC est rectangle en A.','BC est l’hypoténuse.'],'Observe ce triangle A B C. Le petit carré indique un angle droit en A. Le côté situé en face de cet angle droit, B C, est l’hypoténuse. C’est le plus long côté du triangle rectangle. Attention : on ne choisit pas le côté qui semble le plus long sur un dessin.'],
-['La règle d’or','Les aires des carrés','squares',['3² + 4² = 9 + 16 = 25 = 5²','BC² = AB² + AC²'],'Imagine un triangle rectangle dont les côtés mesurent trois, quatre et cinq unités. Construisons un carré de neuf briques et un carré de seize briques. Déplaçons toutes ces briques dans le grand carré : elles remplissent exactement ses vingt-cinq cases. Cet exemple illustre le théorème de Pythagore : dans tout triangle rectangle, le carré de l’hypoténuse est égal à la somme des carrés des deux autres côtés. B C au carré égale A B au carré plus A C au carré si le triangle est rectangle en A.'],
+['La règle d’or','Les aires des carrés','squares',['3² + 4² = 9 + 16 = 25 = 5²','BC² = AB² + AC²'],'Imagine un triangle rectangle dont les côtés mesurent trois, quatre et cinq unités. Construisons un carré de neuf petits carreaux et un carré de seize carreaux. Déplaçons tous ces carreaux dans le grand carré : elles remplissent exactement ses vingt-cinq cases. Cet exemple illustre le théorème de Pythagore : dans tout triangle rectangle, le carré de l’hypoténuse est égal à la somme des carrés des deux autres côtés. B C au carré égale A B au carré plus A C au carré si le triangle est rectangle en A.'],
 ['Le pont','Calculer l’hypoténuse','direct',['ABC est rectangle en A.','D’après le théorème de Pythagore :','BC² = AB² + AC²'],'Nous connaissons deux longueurs : A B vaut six centimètres et A C vaut huit centimètres. Calculons B C. Avant tout calcul, écris que le triangle est rectangle en A, puis cite le théorème de Pythagore et écris l’égalité avec les lettres.'],
 ['Le pont','Du carré à la longueur','direct',['BC² = 6² + 8²','BC² = 36 + 64 = 100','BC = √100 = 10 cm'],'Remplaçons les lettres par les nombres. Six au carré vaut trente-six. Huit au carré vaut soixante-quatre. Leur somme vaut cent. Nous avons obtenu B C au carré, pas encore B C ! La longueur est positive, donc on prend la racine carrée de cent. B C mesure dix centimètres.'],
 ['Le treuil','Calculer un côté de l’angle droit','leg',['BC² = AB² + AC²','AC² = BC² − AB²'],'Un autre problème nous attend. Le câble mesure treize centimètres sur notre plan et le côté A B mesure cinq centimètres. Le triangle est rectangle en A. Cette fois, la longueur inconnue est A C, un côté de l’angle droit. On écrit exactement la même égalité de Pythagore, puis on isole A C au carré par une soustraction.'],
@@ -15,6 +15,17 @@ const scenes=[
 ['La fausse rune','Utiliser la contraposée','counter',['JK² ≠ IJ² + IK²','D’après la contraposée de Pythagore,','IJK n’est pas rectangle.'],'D’après la contraposée du théorème de Pythagore, le triangle I J K n’est pas rectangle. Ne dis pas qu’il est rectangle parce que les résultats sont proches. Une égalité doit être exacte. Dans cet exercice, aucune marque d’angle droit ne doit être dessinée avant la conclusion.'],
 ['Le sceau du savoir','Choisir la bonne propriété','summary',['Longueur dans un triangle rectangle → Théorème direct','Égalité vérifiée → Réciproque','Égalité non vérifiée → Contraposée'],'Retenons ces trois situations. Si le triangle est déjà rectangle et que tu cherches une longueur, utilise le théorème direct. Pour démontrer qu’il est rectangle, vérifie l’égalité et utilise la réciproque. Si l’égalité est fausse, utilise la contraposée. Maintenant, prépare ton brouillon et passe le quiz. Il est sans note : il sert à vérifier que tu es prêt à refaire une évaluation.']
 ];
+// Dialogues fictifs : une voix par intervenant, et une question d'élève lorsque cela éclaire la notion.
+const questions={
+ 1:['Nikos','Maître, comment reconnaître le côté que je dois utiliser ?'],
+ 2:['Daphné','Et si nous pouvions compter les petits carreaux pour comprendre cette égalité ?'],
+ 3:['Léon','Comment trouver la longueur du côté incliné sans la mesurer ?'],
+ 5:['Nikos','Et si je connais déjà l’hypoténuse, dois-je encore additionner ?'],
+ 7:['Daphné','Comment savoir si le triangle du bâtisseur est vraiment rectangle ?'],
+ 9:['Léon','Et si les deux résultats sont presque égaux, est-ce suffisant ?'],
+ 11:['Nikos','Maître, comment choisir entre les trois propriétés ?']
+};
+function dialogue(i){let s=scenes[i],q=questions[i];return [...(q?[{speaker:q[0],text:q[1]}]:[]),{speaker:'Pythagore',text:s[4]}]}
 const quiz=[
 {q:'ABC est rectangle en A. AB = 9 cm, AC = 12 cm. Calcule BC.',answer:15,hint:'BC² = 9² + 12² = 225 ; BC = √225 = 15 cm.'},
 {q:'ABC est rectangle en A. BC = 17 cm, AB = 8 cm. Calcule AC.',answer:15,hint:'AC² = 17² − 8² = 225 ; AC = 15 cm.'},
@@ -25,5 +36,5 @@ const norm=v=>String(v??'').trim().replace(/−/g,'-').replace(/,/g,'.').replace
 function equal(e,v){let a=norm(v);return typeof e==='number'?/^[-+]?\d+(?:\.\d+)?$/.test(a)&&Math.abs(Number(a)-e)<1e-8:!!a&&a===norm(e)}
 function score(qs,answers){return qs.reduce((sum,q,i)=>sum+q.expected.reduce((n,e,j)=>n+Number(equal(e,answers[i]?.[j])),0)/q.expected.length,0)*3/4}
 function fresh(bank,excluded=[]){return Array.from({length:4},(_,i)=>{let q;for(let t=0;t<100;t++){q=bank.homeworkQuestion(1,i);if(!excluded.includes(q.t))return q}throw Error('Impossible de tirer une nouvelle question. Réessaie.')})}
-root.AstreonPythagore=Object.freeze({scenes,quiz,equal,score,fresh});
+root.AstreonPythagore=Object.freeze({scenes,quiz,equal,score,fresh,dialogue});
 })(globalThis);
